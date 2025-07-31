@@ -1,0 +1,3936 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Camping Interface</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            height: 95vh;
+            background-color: whitesmoke;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .message-container {
+            width: 1500px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #9A7E6F;
+            border-radius: 10px;
+            background-color: #E9EED9;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .message {
+            font-size: 24px;
+            color: #54473F;
+            text-align: center;
+            margin: 0;
+        }
+
+        .container {
+            width: 1500px;
+            height: 800px;
+            padding: 20px;
+            border: 1px solid #9A7E6F;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #E9EED9;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .title {
+            font-size: 40px;
+            color: #54473F;
+        }
+
+        .intro {
+            font-size: 25px;
+            width: 70%;
+            color: #54473F;
+            margin:auto;
+        }
+
+        .controls-container {
+            display: none;
+        }
+
+        .start-button {
+            font-size: 26px;
+            font-weight: bold;
+            text-align: center;
+            border: 1px solid #9A7E6F;
+            border-radius: 8px;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #9A7E6F;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .start-button:hover {
+            background-color: #826a5d;
+        }
+
+        .photo-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 2px;
+            display: none;
+        }
+
+        .gridDiv {
+            border-radius: 8px;
+            border: 10px solid #54473F;
+            width: 99%;
+            height: 98%;
+            z-index: 2;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            text-align: center;
+        }
+
+        .gridDiv > div {
+            transition: border 0.2s ease;
+            position: relative;
+        }
+
+        .gridDiv > .steak:hover {
+            border: 15px solid #54473F;
+        }
+
+        .gridDiv > .steak > span {
+            visibility: hidden;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(84, 71, 63, 0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            white-space: nowrap;
+            z-index: 3;
+        }
+
+        .gridDiv > div:hover > span {
+            visibility: visible;
+        }
+
+        .controls-container > * {
+            position: absolute;
+            background-color: #9A7E6F;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: bold;
+            width: 150px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .move-pole-button {
+            top: 30px;
+            right: 45px;
+        }
+
+        .rotate-left-button {
+            top: 100px;
+            right: 200px;
+        }
+
+        .rotate-right-button {
+            top: 100px;
+            right: 45px;
+        }
+
+        .angle-display {
+            top: 170px;
+            right: 45px;
+            cursor: default;
+            width: 120px;
+        }
+
+        .depth-display {
+            top: 170px;
+            right: 200px;
+            cursor: default;
+            width: 120px;
+        }
+
+        .move-pole-up-button {
+            position: absolute;
+            background-color: #9A7E6F;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: bold;
+            width: 150px;
+            text-align: center;
+            cursor: pointer;
+            top: 30px;
+            right: 200px;
+        }
+
+        .next-pole-button {
+            position: absolute;
+            background-color: #E9EED9;
+            color: #54473F;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: bold;
+            width: 150px;
+            text-align: center;
+            cursor: pointer;
+            top: 220px;
+            right: 123px;
+        }
+
+        .move-pole-button:hover, .rotate-left-button:hover, .rotate-right-button:hover, .move-pole-up-button:hover {
+            background-color: #826a5d;
+        }
+
+        .modDiv{
+            border: 1px solid red;
+            position: absolute;
+            top:50px;
+            left:50px;
+        }
+
+        .modButton{
+            position: absolute;
+            top:70px;
+            left:50px;
+            width:50px;
+            height: 50px;
+        }
+
+        .weather-box {
+                position: fixed;
+                left: 20px;
+                top: 300px;
+                width: 250px;
+                background-color: #E9EED9;
+                border: 1px solid #9A7E6F;
+                border-radius: 10px;
+                padding: 20px;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+                z-index: 1000;
+                font-family: Arial, sans-serif;
+                text-align: center;
+            }
+
+        .time-display {
+            font-size: 24px;
+            font-weight: bold;
+            color: #54473F;
+            margin-bottom: 10px;
+        }
+
+        .temperature-display {
+            font-size: 20px;
+            color: #54473F;
+            margin-bottom: 10px;
+        }
+
+        .wind-alert {
+            display: none;
+            background-color: #FEF3C7;
+            border: 1px solid #FCD34D;
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 10px;
+            color: #92400E;
+        }
+
+        .wind-alert.show {
+                display: block;
+            }
+
+        .health-bar-container {
+            margin-top: 15px;
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 10px;
+            padding: 3px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .health-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #4CAF50;
+            border-radius: 8px;
+            transition: width 0.2s ease-in-out;
+        }
+
+        .health-label, .energy-label {
+            font-size: 16px;
+            color: #54473F;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .energy-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #FFD700;
+            border-radius: 8px;
+            transition: width 0.2s ease-in-out;
+        }
+
+        .path-line {
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+            animation: pathPulse 2s infinite;
+        }
+
+        @keyframes pathPulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+
+        .help{
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            bottom: 50px;
+            right: 50px;
+            background-image: url('help.png');
+            background-size: cover;
+            background-position: center;
+            border-radius: 50%;
+        }
+
+        .manual-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .manual-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .close-button {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #9A7E6F;
+            transition: color 0.3s ease;
+        }
+
+        .close-button:hover {
+            color: #54473F;
+        }
+
+        .manual-title {
+            font-size: 28px;
+            color: #9A7E6F;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #E9EED9;
+            padding-bottom: 15px;
+        }
+
+        .manual-welcome {
+            font-size: 22px;
+            color: #826a5d;
+            margin: 20px 0 15px 0;
+            padding-left: 15px;
+            border-left: 4px solid #9A7E6F;
+        }
+
+        .manual-intro {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .manual-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: #9A7E6F;
+            margin-bottom: 15px;
+            background-color: #E9EED9;
+            padding: 12px 15px;
+            border-radius: 8px;
+        }
+
+        .subsection-title {
+            color: #826a5d;
+            font-weight: bold;
+            margin: 15px 0 10px 0;
+        }
+
+        .manual-list {
+            margin-left: 25px;
+            margin-bottom: 20px;
+            color: #666;
+        }
+
+        .manual-list li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .tips-box {
+            background-color: #E9EED9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+
+        .tips-title {
+            color: #9A7E6F;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="weather-box">
+        <div class="time-display"></div>
+        <div class="temperature-display"></div>
+        <div class="wind-alert"></div>
+        <div class="health-label">Αντοχή Σκηνής</div>
+        <div class="health-bar-container">
+            <div class="health-bar"></div>
+        </div>
+        <br>
+        <div class="energy-label">Επίπεδο Ενέργειας</div>
+        <div class="health-bar-container">
+            <div class="energy-bar"></div>
+        </div>  
+    </div>
+
+<!--     <div class="modDiv">
+        <input class="modInput">
+        <button class="modButton"></button>
+    </div> -->
+
+    <div class="message-container">
+        <p class="message"></p>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Smart Camping Interface</h1>
+            <p class="intro">Ανακάλυψε τον κόσμο του έξυπνου και διαδραστικού camping, όπουη τεχνολογία συναντά τη φύση, για μια εμπειρία που θα σου μείνει αξέχαστη.</p>
+             <!-- Discover the world of smart and interactive camping, where technology meets nature for a unique experience. -->
+        </div>
+        <button class="start-button">Διάλεξε περιοχή στον χάρτη.</button>
+        <div class="photo-grid"></div>
+    </div>
+
+    <div class="help"></div>
+    <div class="manual-popup" style="display: none;">
+        <div class="manual-content">
+            <span class="close-button">&times;</span>
+            <h2 class="manual-title">Εγχειρίδιο Χρήστη</h2>
+            
+            <h3 class="manual-welcome">Καλώς ήρθατε στο Smart Camping!</h3>
+            <p class="manual-intro">Αυτός ο οδηγός θα σας βοηθήσει να εξοικειωθείτε με όλες τις λειτουργίες της έξυπνης σκηνής σας.</p>
+
+            <div class="manual-section">
+                <h4 class="section-title">1. Αρχική Εγκατάσταση Σκηνής</h4>
+                <p class="subsection-title">Επιλογή Τοποθεσίας:</p>
+                <ul class="manual-list">
+                    <li>Χρησιμοποιήστε τον διαδραστικό χάρτη για επιλογή σημείου</li>
+                    <li>Δείτε πληροφορίες για σταθερότητα εδάφους, υγρασία και ηλιοφάνεια της κάθε περιοχής</li>
+                </ul>
+                <p class="subsection-title">Τοποθέτηση Πασάλων:</p>
+                <ul class="manual-list">
+                    <li>Ακολουθήστε τις οδηγίες για κάθε πάσαλο</li>
+                    <li>Ρυθμίστε γωνία και βάθος με τα κουμπιά ελέγχου</li>
+                    <li>Αφού τοποθετηθούν οι πάσσαλοι, η σκηνή στήνεται αυτόματα</li>
+                </ul>
+            </div>
+
+            <div class="manual-section">
+                <h4 class="section-title">2. Κύριες Λειτουργίες</h4>
+                <p class="subsection-title">Διαχείριση Ενέργειας:</p>
+                <ul class="manual-list">
+                    <li>Ενεργοποίηση/απενεργοποίηση συσκευών</li>
+                    <li>Παρακολούθηση επιπέδου μπαταρίας</li>
+                    <li>Λειτουργία εξοικονόμησης</li>
+                    <li><strong>Τα φωτοβολταϊκά αναπληρώνουν το 2% της ενέργειας της σκηνής μεταξύ των ωρών 06:00 - 20:00</strong>, ενώ τις υπόλοιπες ώρες δεν υπάρχει αρκετή ηλιοφάνεια.</li>
+                </ul>
+                <p class="subsection-title">Προστατευτικά Πανιά:</p>
+                <ul class="manual-list">
+                    <li>Επιλογή κατεύθυνσης τοποθέτησης</li>
+                    <li>Παρακολούθηση προειδοποιήσεων ανέμου</li>
+                    <li>Δεν χρειάζεται να βρίσκεσαι στο μενού των πανιών για να προστατεύουν την σκηνή, εφόσον έχουν τοποθετηθεί</li>
+                </ul>
+            </div>
+
+            <div class="manual-section">
+                <h4 class="section-title">3. Πρόσθετες Λειτουργίες</h4>
+                
+                <p class="subsection-title">Καιρός και Περιβάλλον:</p>
+                <ul class="manual-list">
+                    <li><strong>Προβολή Καιρού:</strong> Παρακολούθηση θερμοκρασίας, υγρασίας και πρόγνωση για τις επόμενες ώρες</li>
+                    <li><strong>Ειδοποιήσεις:</strong> Άμεση ενημέρωση για ακραία καιρικά φαινόμενα</li>
+                </ul>
+
+                <p class="subsection-title">Φωτισμός και Άνεση:</p>
+                <ul class="manual-list">
+                    <li><strong>Ρύθμιση Φωτισμού:</strong> Επιλογή έντασης και χρώματος φωτισμού</li>
+                    <li><strong>Προκαθορισμένα Προφίλ:</strong> Ειδικές ρυθμίσεις για διάβασμα, χαλάρωση ή διασκέδαση</li>
+                    <li>Τα φώτα έξω από την σκηνή δεν καταναλώνουν ρεύμα καθώς παρέχεται ενέργεια από τον χώρο του camping</li>
+                </ul>
+
+                <p class="subsection-title">Πλοήγηση και Ασφάλεια:</p>
+                <ul class="manual-list">
+                    <li><strong>Καταφύγια Έκτακτης Ανάγκης:</strong> Εντοπισμός και καθοδήγηση προς το κοντινότερο καταφύγιο</li>
+                    <li><strong>Βέλτιστες Διαδρομές:</strong> Προτάσεις ασφαλών μονοπατιών με βάση τις καιρικές συνθήκες</li>
+                </ul>
+
+                <p class="subsection-title">Τουριστικές Υπηρεσίες:</p>
+                <ul class="manual-list">
+                    <li><strong>Αξιοθέατα:</strong> Ανακάλυψη και πληροφορίες για κοντινά σημεία ενδιαφέροντος</li>
+                    <li><strong>Μονοπάτια Πεζοπορίας:</strong> Προτεινόμενες διαδρομές με βαθμό δυσκολίας</li>
+                    <li><strong>Φωτογραφικό Υλικό:</strong> Προεπισκόπηση τοποθεσιών και διαδρομών</li>
+                </ul>
+
+                <p class="subsection-title">Υπηρεσίες Camping:</p>
+                <ul class="manual-list">
+                    <li><strong>Παραγγελίες Φαγητού:</strong> Online μενού και παραγγελία με παράδοση στη σκηνή</li>
+                    <li><strong>Κρατήσεις Δραστηριοτήτων:</strong> Συμμετοχή σε οργανωμένες εκδηλώσεις και αθλήματα</li>
+                    <li><strong>Άμεση Επικοινωνία:</strong> Απευθείας σύνδεση με τη ρεσεψιόν για οποιοδήποτε αίτημα</li>
+                </ul>
+
+                <p class="subsection-title">Επιτήρηση Περιβάλλοντος:</p>
+                <ul class="manual-list">
+                    <li><strong>Περιμετρική Θέαση:</strong> Έλεγχος του χώρου γύρω από τη σκηνή</li>
+                </ul>
+            </div>
+
+            <div class="tips-box">
+                <h4 class="tips-title">Χρήσιμες Συμβουλές:</h4>
+                <ul class="manual-list">
+                    <li>Ελέγχετε τακτικά τις καιρικές προειδοποιήσεις</li>
+                    <li>Διατηρείτε το επίπεδο ενέργειας πάνω από 20%</li>
+                    <li>Για βοήθεια, επικοινωνήστε με τη ρεσεψιόν μέσω της εφαρμογής</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+<script>
+
+    let currentRotation = 0;
+    let currentDepth = 0;
+    let poleDiv;
+    let currentPoleIndex = 0;
+    const targetAngles = [30, 10, -20, -40];
+    const targetDepth = 5;
+    let polesPlaced = 0;
+    let tentHealth = 100;
+    const directions = ['north','south','east','west'];
+    let activeCoverDirection = null;
+    let clickedDirection;
+    let devicesOn = [];
+    let energyLevel = 100;
+    let currentTime = new Date();
+    currentTime.setHours(7, 30, 0); // Start at 8:00
+    let initialFlag = false;
+    const deviceStates = {};
+    const devices = ['Air Condition','Φώτα','Θέρμανση','Θερμοσύφωνας','Τηλεόραση','Ψυγείο'];
+    devices.forEach(device => deviceStates[device] = false);
+    let lastEnergyUpdate = Date.now();
+    const ENERGY_UPDATE_INTERVAL = 10000; // Minimum time between updates (10 seconds)
+    const areaValues = [
+        [{ stability: 85, humidity: 45, sunExposure: 75 },
+                { stability: 65, humidity: 60, sunExposure: 85 },
+                { stability: 90, humidity: 35, sunExposure: 65 }],
+        [{ stability: 70, humidity: 55, sunExposure: 90 },
+                { stability: 80, humidity: 40, sunExposure: 70 },
+                { stability: 75, humidity: 50, sunExposure: 80 }],
+        [{ stability: 95, humidity: 30, sunExposure: 60 },
+                { stability: 60, humidity: 65, sunExposure: 95 },
+                { stability: 85, humidity: 45, sunExposure: 85 }]];
+    let tentLocation = '22';//το id απο το div που θα μπει το tent
+    const possibleShelterLocations = ['11','13','31', '33'];
+    let temp;
+    let availableShelterLocations;
+    let shelterLocation; //το id απο το div που θα μπει το shelter
+    let firstTime = true;
+    let startCell;
+    let endCell;
+    let protectiveCovers = {
+    north: false,
+    south: false,
+    east: false,
+    west: false};
+    let selectedItems = [];
+
+    $('.help').click(function(){
+        $('.manual-popup').fadeIn();
+    });
+
+    $('.close-button').click(function(){
+        $('.manual-popup').fadeOut();
+    });
+
+    // Κλείσιμο του popup όταν κάνουμε κλικ έξω από το content
+    $(document).mouseup(function(e) {
+        let container = $('.manual-content');
+        if (!container.is(e.target) && container.has(e.target).length === 0) {
+            $('.manual-popup').fadeOut();
+        }
+    });
+
+    function createMap() {
+        const mainImage = $('<div>').css({
+            'background-image': 'url("map2.jpg")',
+            'background-size': 'cover',
+            'background-position': 'center',
+            'width': '100%',
+            'height': '100%',
+            'z-index': '1',
+            'position': 'relative'
+        });
+        $('.photo-grid').html('').append(mainImage);
+        $('.photo-grid').show();
+        createGrid();
+    }
+
+    //If createGrid has variable, then it is called from main menu
+    function createGrid(flag = false) {
+        let gridDiv = $('<div>').addClass('gridDiv');
+
+        if(flag){
+            if(firstTime){            
+                firstTime = false;
+
+                // Επιλέγουμε τυχαία μια τοποθεσία για το καταφύγιο
+                temp = tentLocation.toString();
+                
+                // Αφαίρεση της θέσης του tentLocation από τις πιθανές θέσεις
+                availableShelterLocations = possibleShelterLocations.filter(loc => loc !== temp);
+                
+                // Επιλογή ΜΙΑΣ τυχαίας τοποθεσίας για το καταφύγιο
+                shelterLocation = availableShelterLocations[Math.floor(Math.random() * availableShelterLocations.length)];
+            }
+            
+            // Create grid to place tent and camp
+            for (let i = 1; i <= 3; i++) {
+                for(let j = 1; j <= 3; j++){
+                    let tempDiv = $('<div>').attr('id',`div${i}${j}`);
+
+                    // Τοποθετηση καταφυγιου
+                    if(i.toString() + j.toString() === shelterLocation){
+                        let shelterSpan = $(`<span>`).css({
+                            'display': 'flex',
+                            'justify-content': 'center',
+                            'align-items': 'center',
+                            'width': '100%',
+                            'height': '100%'
+                        });
+                        
+                        let image = $('<img>').attr('src', 'shelter2.png').css({
+                            'width': '100px',
+                            'height': '100px',
+                            'object-fit': 'contain'
+                        });
+                        
+                        shelterSpan.append(image);
+                        tempDiv.append(shelterSpan);
+                    }
+
+                    // Τοποθετηση σκηνης
+                    if(i.toString() == temp[0] && j.toString() === temp[1]){
+                        let stabilitySpan = $(`<span>`).css({
+                            'display': 'flex',
+                            'justify-content': 'center',
+                            'align-items': 'center',
+                            'width': '100%',
+                            'height': '100%'
+                        });
+                        
+                        let image = $('<img>').attr('src', 'topdownTent3.png').css({
+                            'width': '100px',
+                            'height': '100px',
+                            'object-fit': 'contain'
+                        });
+                        
+                        stabilitySpan.append(image);
+                        tempDiv.append(stabilitySpan);
+                    }
+                    gridDiv.append(tempDiv);
+                }
+            }
+
+            $(flag).append(gridDiv);
+            $('.steak').click(function() {
+                $('.container').empty();
+                createControlButtons();
+                placeSteak();
+                $('.controls-container').show();
+                showMessage(`Τοποθετήστε τον πάσσαλο ${currentPoleIndex + 1} βάθος ${targetDepth} μέτρα και με γωνία ${targetAngles[currentPoleIndex]}°.`);
+            });
+        }else{
+            for (let i = 0; i < 3; i++) {
+                for(let j = 0; j < 3; j++){
+                    let tempDiv = $('<div>').addClass('steak').attr('id',`${i+1}${j+1}`);
+                    let stabilitySpan = $('<span>Σταθερότητα Εδάφους: ' + areaValues[i][j].stability + '%<br>Υγρασία: ' + areaValues[i][j].humidity + '%<br>Έκθεση Στον Ήλιο: ' + areaValues[i][j].sunExposure + '%</span>');
+                    tempDiv.append(stabilitySpan);
+                    gridDiv.append(tempDiv);
+                }
+            }
+
+            $('.photo-grid').append(gridDiv);
+
+            $('.steak').click(function() {
+                tentLocation = $(this).attr('id');
+                $('.container').empty();
+                createControlButtons();
+                placeSteak();
+                $('.controls-container').show();
+                showMessage(`Τοποθετήστε τον πάσσαλο ${currentPoleIndex + 1} βάθος ${targetDepth} μέτρα και με γωνία ${targetAngles[currentPoleIndex]}°.`);
+            });
+        }  
+    }
+
+    function createControlButtons() {
+        const controlsContainer = $('<div>').addClass('controls-container');
+    
+        const moveUpButton = $('<button>').addClass('move-pole-up-button').text('Σήκωσε Τον Πάσσαλο');
+        const moveDownButton = $('<button>').addClass('move-pole-button').text('Κάρφωσε Τον Πάσσαλο');
+        const rotateLeftButton = $('<button>').addClass('rotate-left-button').text('Δεξιά Περιστροφή');
+        const rotateRight = $('<button>').addClass('rotate-right-button').text('Αριστερή Περιστροφή');
+        const angleDisplay = $('<div>').addClass('angle-display').text('Γωνία: 0°');
+        const depthDisplay = $('<div>').addClass('depth-display').text('Βάθος: 0 μέτρα');
+        const nextPole = $('<button>').addClass('next-pole-button').text('Επόμενος Πάσσαλος');
+
+        controlsContainer.append(moveUpButton, moveDownButton, rotateLeftButton, rotateRight, angleDisplay, depthDisplay, nextPole);
+        nextPole.hide();
+
+        $('body').append(controlsContainer);
+
+        moveUpButton.click(function() {
+            let angleInRadians = currentRotation * (Math.PI / 180);
+            let deltaY = Math.cos(angleInRadians) * -50; // Αρνητικό για κίνηση προς τα πάνω
+            let deltaX = Math.sin(angleInRadians) * -50; // Αρνητικό για αντίστροφη κίνηση στον X άξονα
+
+            let poleTop = parseInt(poleDiv.css('top')) + deltaY;
+            let poleLeft = parseInt(poleDiv.css('left')) - deltaX;
+
+            poleDiv.css({ 
+                top: `${poleTop}px`, 
+                left: `${poleLeft}px`
+            });
+            currentDepth -= 0.5;
+            adjustPoleVisibility();
+        });
+
+        moveDownButton.click(function() {
+            let angleInRadians = currentRotation * (Math.PI / 180);
+            let deltaY = Math.cos(angleInRadians) * 50;
+            let deltaX = Math.sin(angleInRadians) * 50;
+
+            let poleTop = parseInt(poleDiv.css('top')) + deltaY;
+            let poleLeft = parseInt(poleDiv.css('left')) - deltaX;
+
+            poleDiv.css({ 
+                top: `${poleTop}px`, 
+                left: `${poleLeft}px`
+            });
+
+            currentDepth += 0.5
+            adjustPoleVisibility();
+        });
+
+        rotateLeftButton.click(function() {
+            currentRotation -= 10;
+            poleDiv.css('transform', `rotate(${currentRotation}deg)`);
+            updateAngleDisplay();
+        });
+
+        rotateRight.click(function() {
+            currentRotation += 10;
+            poleDiv.css('transform', `rotate(${currentRotation}deg)`);
+            updateAngleDisplay();
+        });
+    }
+
+    function adjustPoleVisibility() {
+        let poleRect = poleDiv[0].getBoundingClientRect();
+        let eraseRect = $('.container').find('div').last()[0].getBoundingClientRect();
+        
+        let angleInRadians = currentRotation * (Math.PI / 180);
+        let poleHeight = poleRect.height;
+        let poleWidth = poleRect.width;
+        
+        let poleCenter = {
+            x: poleRect.left + poleWidth / 2,
+            y: poleRect.top + poleHeight / 2
+        };
+        
+        let distanceToErase = eraseRect.top - poleCenter.y;
+        
+        let visibleLength;
+        if (Math.abs(currentRotation) < 45) {
+            visibleLength = distanceToErase / Math.cos(angleInRadians);
+        } else {
+            visibleLength = Math.sqrt(
+                Math.pow(distanceToErase, 2) + 
+                Math.pow(distanceToErase * Math.tan(angleInRadians), 2)
+            );
+        }
+        
+        let visiblePercentage = (visibleLength + poleHeight / 2) / poleHeight * 100;
+        visiblePercentage = Math.max(0, Math.min(100, visiblePercentage));
+        
+        if (poleRect.bottom > eraseRect.top) {
+            poleDiv.css('clip-path', `inset(0 0 ${100 - visiblePercentage}% 0)`);
+        } else {
+            poleDiv.css('clip-path', 'none');
+        }
+
+            currentDepth;
+        $('.depth-display').text(`Βάθος: ${currentDepth} μέτρα`);
+        if(currentDepth === targetDepth){
+            $('.depth-display').css('background-color', '#4CAF50');
+            showMessage(`Σωστό βάθος! Τώρα ρυθμίστε τη γωνία στις ${targetAngles[currentPoleIndex]}°`);
+        }else{
+            $('.depth-display').css('background-color', '#9A7E6F');
+        }
+        nextPole();
+    }
+
+    function placeSteak() {
+        $('.container').css({
+            'background-image': 'url("dirt.jpg")',
+            'background-size': '100% 100%',
+            'background-repeat': 'no-repeat',
+            'background-position': 'center',
+            'position': 'relative'
+        });
+
+        poleDiv = $('<div>').addClass('poleDiv').css({
+            'height': '2000px',
+            'width': '100%',
+            'background-image': 'url("woodenPole3.png")',
+            'background-size': 'cover',
+            'background-repeat': 'no-repeat',
+            'background-position': 'center',
+            // 'border': '3px solid red',
+            'position': 'absolute',
+            'top': '-1200px',
+            'left': '0px',
+            'transform-origin': 'center center'
+        });
+
+        let eraseDiv = $('<div>').css({
+            'height': '500px',
+            'width': '100%',
+            'position': 'absolute',
+            // 'border': '3px solid green',
+            'top': '500px',
+            'left': '0px',
+            'overflow': 'hidden'
+        });
+
+        $('.container').append(poleDiv);
+        $('.container').append(eraseDiv);
+    }
+
+    function updateAngleDisplay() {
+        let normalizedAngle = ((currentRotation % 360 + 540) % 360) - 180;
+        $('.angle-display').text(`Γωνία: ${normalizedAngle}°`);
+        
+        const buttons = $('.angle-display');
+        if (normalizedAngle === targetAngles[currentPoleIndex]) {
+            buttons.css('background-color', '#4CAF50');
+            if(currentDepth === targetDepth) {
+                showMessage(`Τέλεια! Ο πάσσαλος ${currentPoleIndex + 1} τοποθετήθηκε σωστά!`);
+            }else{
+                buttons.css('background-color', '#9A7E6F');
+            }
+        } else {
+            buttons.css('background-color', '#9A7E6F');
+        }
+        nextPole();
+    }
+
+    $(document).ready(function() {
+        $('.start-button').click(function() {
+            $('.controls-container').remove();
+            $('.container').find('.photo-grid').remove();
+            const newPhotoGrid = $('<div>').addClass('photo-grid');
+            $('.container').append(newPhotoGrid);
+            createMap();
+            showMessage('Επιλέξτε την κατάλληλη περιοχή στον χάρτη που θες να στήσεις την σκηνή.');
+        });
+        $(".weather-box").hide();
+    });
+
+    function nextPole(mod = false) {
+        if(mod){
+            initialFlag = true;
+            mainMenu();
+
+            showMessage("Ωραια, η σκηνή έχει στηθεί. Βρίσκεσαι στο κεντρικό μενού. Από εδώ μπορείς να ελέγξεις όλες τις λειτουργίες της σκηνής.");
+            $(".container").css({})
+        }
+
+        if($(".depth-display").css('background-color') == "rgb(76, 175, 80)" && 
+           $(".angle-display").css('background-color') == "rgb(76, 175, 80)") {
+            if (currentPoleIndex < 3) {
+                $(".next-pole-button").show();
+                
+                // Προσθέστε click handler για το next-pole-button
+                $(".next-pole-button").off('click').on('click', function() {
+                    currentPoleIndex++;
+                    polesPlaced++;
+                    resetPolePosition();
+                    showMessage(`Τοποθετήστε τον πάσσαλο ${currentPoleIndex + 1} με γωνία ${targetAngles[currentPoleIndex]}° και βάθος ${targetDepth} μέτρα`);
+                    $(".next-pole-button").hide();
+                    $(".depth-display").css('background-color', '#9A7E6F');
+                    $(".angle-display").css('background-color', '#9A7E6F');
+                });
+            } else if (currentPoleIndex === 3) {
+                showMessage("Συγχαρητήρια! Όλοι οι πάσσαλοι τοποθετήθηκαν σωστά!");
+                $(".next-pole-button").text("Ολοκλήρωση!").show();
+                
+                $(".next-pole-button").click(function(){
+                    $(".container").empty();
+                    $(".container").css('background-image','none');
+                    $(".controls-container").empty();
+                    showMessage("Ωραια, η σκηνή έχει στηθεί. Βρίσκεσαι στο κεντρικό μενού. Από εδώ, μπορείς να ελέγξεις όλες τις λειτουργίες της σκηνής.");
+                    initialFlag = true;
+                    mainMenu();
+                }); 
+                
+            }
+        }else{
+            $(".next-pole-button").hide();
+        }
+    }
+
+    function hideMessage() {
+        $('.message-container').fadeOut();
+    }
+
+    function showMessage(text) {
+        $('.message').text(text);
+        $('.message-container').fadeIn(250);
+    }
+
+    function resetPolePosition() {
+        currentRotation = 0;
+        currentDepth = 0;
+        
+        poleDiv.css({
+            'top': '-1200px',
+            'left': '0px',
+            'transform': 'rotate(0deg)'
+        });
+        
+        updateAngleDisplay();
+        adjustPoleVisibility();
+    }
+
+    $(".modButton").click(function() {
+        nextPole(mod=true);
+    });
+
+    function mainMenu() {
+        createWeatherBox();
+        $(".container").empty();
+
+        // Container for the buttons
+        const buttonsContainer = $('<div>').css({
+            'display': 'grid',
+            'grid-template-columns': 'repeat(2, 1fr)',
+            'gap': '0',
+            'place-items': 'center',
+            'width': '100%',
+            'height': '100%',
+            'padding': '4rem',
+            'position': 'relative'
+        });
+
+        // Menu button labels with PNG icons
+        const buttonLabels = [
+            { text: 'Διαχείρηση Ενέργειας', iconSrc: 'thunderbolt.png' },
+            { text: 'Τοποθέτηση Προστατευτικών Πανιών', iconSrc: 'shield.png' },
+            { text: 'Ρύθμιση Φωτισμού', iconSrc: 'lightbulb.png' },
+            { text: 'Καιρικές Συνθήκες', iconSrc: 'weather.png' },
+            { text: 'Πλοήγηση Σε Καταφύγια', iconSrc: 'shelter.png' },
+            { text: 'Επικοινωνία Με Υπαλλήλους', iconSrc: 'support.png' },
+            { text: 'Τουριστική Πλοήγηση', iconSrc: 'navigation.png' },
+            { text: 'Προβολή Εξωτερικού Χώρου', iconSrc: 'nature.png' }
+        ];
+
+        // Create button wrapper with click handler
+        const createButtonWrapper = (labelObj, index) => {
+            const wrapper = $('<div>').css({
+                'padding': '1.5rem',
+                'width': '100%',
+                'height': '100%',
+                'display': 'flex',
+                'justify-content': 'center',
+                'align-items': 'center',
+                'position': 'relative'
+            });
+
+            const button = $('<button>')
+                .css({
+                    'background-color': '#9A7E6F',
+                    'color': 'white',
+                    'padding': '30px 40px',
+                    'border-radius': '12px',
+                    'font-size': '24px',
+                    'font-weight': 'bold',
+                    'width': '300px',
+                    'height': '150px',
+                    'text-align': 'left',
+                    'cursor': 'pointer',
+                    'transition': 'background-color 0.3s ease',
+                    'display': 'flex',
+                    'align-items': 'center',
+                    'gap': '20px'
+                })
+                .hover(
+                    function() { $(this).css('background-color', '#826a5d'); },
+                    function() { $(this).css('background-color', '#9A7E6F'); }
+                )
+                .click(function() {
+                    createSubWindow(labelObj.text);
+                });
+
+            // Create icon as an img element
+            const iconImg = $('<img>')
+                .attr('src', labelObj.iconSrc)
+                .css({
+                    'width': '40px',
+                    'height': '40px',
+                    'object-fit': 'contain'
+                });
+
+            // Create text container
+            const textContainer = $('<div>')
+                .text(labelObj.text)
+                .css({
+                    'flex': '1',
+                    'line-height': '1.2'
+                });
+
+            button.append(iconImg, textContainer);
+            wrapper.append(button);
+            return wrapper;
+        };
+
+        // Add buttons with wrappers
+        buttonLabels.forEach((label, index) => {
+            buttonsContainer.append(createButtonWrapper(label, index));
+        });
+
+        // Borders
+        const verticalBorder = $('<div>').css({
+            'position': 'absolute',
+            'top': '4rem',
+            'bottom': '4rem',
+            'left': '50%',
+            'width': '3px',
+            'background-color': '#9A7E6F',
+            'transform': 'translateX(-50%)'
+        });
+
+        const horizontalBorders = [];
+        for (let i = 1; i <= 3; i++) {
+            const horizontalBorder = $('<div>').css({
+                'position': 'absolute',
+                'left': '4rem',
+                'right': '4rem',
+                'top': i === 1 ? `270px` : i === 2 ? `470px` : '670px',
+                'height': '2px',
+                'background-color': '#9A7E6F',
+                'transform': 'translateY(-50%)'
+            });
+            horizontalBorders.push(horizontalBorder);
+        }
+
+        buttonsContainer.append(verticalBorder);
+        horizontalBorders.forEach(border => buttonsContainer.append(border));
+        $(".container").append(buttonsContainer);
+    }
+
+    function createWeatherBox() {        
+        $(".weather-box").show();
+
+        // Style the energy bar μόνο αν δεν έχει ήδη στυλ
+        if ($('.energy-bar').css('transition') !== 'width 0.5s ease-in-out') {
+            $('.energy-bar').css({
+                'width': `${energyLevel}%`,
+                'height': '20px',
+                'background-color': energyLevel > 66 ? '#FFD700' : // Χρυσό
+                                  energyLevel > 33 ? '#FFA500' : // Πορτοκαλί
+                                  '#FF0000', // Κόκκινο
+                'border-radius': '8px',
+                'transition': 'width 0.5s ease-in-out'
+            });
+        }    
+
+        // Temperature calculation based on time
+        function calculateTemperature() {
+            const hour = currentTime.getHours();
+            const baseTemp = 13; // Starting temperature at 8:00
+
+            if (hour >= 8 && hour < 18) {
+                // 8:00-18:00: Temperature rises 15 degrees over 10 hours
+                const hoursFrom8 = (hour - 8) + (currentTime.getMinutes() / 60);
+                const tempIncrease = (15 * hoursFrom8) / 10;
+                return baseTemp + tempIncrease;
+            } else if (hour >= 18 && hour < 23) {
+                // 18:00-23:00: Temperature drops 5 degrees over 5 hours
+                const hoursFrom18 = (hour - 18) + (currentTime.getMinutes() / 60);
+                const tempDecrease = (5 * hoursFrom18) / 5;
+                return (baseTemp + 15) - tempDecrease;
+            } else {
+                // 23:00-8:00: Temperature drops 10 degrees over 9 hours
+                let hoursFrom23;
+                if (hour >= 23) {
+                    hoursFrom23 = (hour - 23) + (currentTime.getMinutes() / 60);
+                } else {
+                    hoursFrom23 = (hour + 1) + (currentTime.getMinutes() / 60);
+                }
+                const tempDecrease = (10 * hoursFrom23) / 9;
+                return (baseTemp + 10) - tempDecrease;
+            }
+        }
+
+        function updateTime() {
+            currentTime.setMinutes(currentTime.getMinutes() + 30);
+            if (currentTime.getHours() >= 24) {
+                currentTime.setHours(currentTime.getHours() - 24);
+            }
+            $('.time-display').text(currentTime.toLocaleTimeString([], { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            }));
+            
+            updateTemperature();
+        }
+
+        function updateTemperature() {
+            const temp = calculateTemperature();
+            $('.temperature-display').text(`Θερμοκρασία: ${temp.toFixed(1)}°C`);
+        }
+
+        // Random wind alerts between 1-2 minutes
+        function scheduleNextWindAlert() {
+            const randomDelay = Math.random() * 60000 + 60000; // Random delay between 1-2 minutes
+            setTimeout(() => {
+                showWindAlert();
+                scheduleNextWindAlert(); // Schedule next alert
+            }, randomDelay);
+        }
+
+        // Δημιουργούμε νέα intervals μόνο αν δεν υπάρχουν ήδη
+        if(initialFlag) {
+            // Initial updates
+            updateTime();
+            updateTemperature();
+            updateEnergyLevel(); // Initial energy update
+            scheduleNextWindAlert();
+            
+            // Set up intervals
+            setInterval(updateTime, 10000); // Update time every 10 seconds
+            setInterval(updateEnergyLevel, 1000); // Ενημέρωση ενέργειας κάθε 1 δευτερόλεπτο
+            
+            initialFlag = false;
+        }   
+    }
+
+    function updateTentHealth() {
+        // Update the health bar width and color
+        $('.health-bar').css({
+            'width': tentHealth + '%',
+            'background-color': tentHealth > 66 ? '#4CAF50' : // Green
+                              tentHealth > 33 ? '#FFA500' : // Orange
+                              '#FF0000' // Red
+        });
+    }
+
+    function updateEnergyLevel() {
+        const now = Date.now();
+        
+        // Έλεγχος αν πέρασε αρκετός χρόνος από την τελευταία ενημέρωση
+        if (now - lastEnergyUpdate < ENERGY_UPDATE_INTERVAL) {
+            return;
+        }
+        
+        const hour = currentTime.getHours();
+        let energyConsumption = devicesOn.length;
+        
+        // Κατά τη διάρκεια της νύχτας (20:00 - 06:00)
+        if (hour >= 20 || hour < 6) {
+            // Μείωση ενέργειας βάσει των ενεργών συσκευών
+            energyLevel = Math.max(0, energyLevel - energyConsumption);
+        } 
+        // Κατά τη διάρκεια της ημέρας (06:00 - 20:00)
+        else {
+            // Αύξηση 2% μείον την κατανάλωση των συσκευών
+            energyLevel = Math.min(100, energyLevel + 2 - energyConsumption);
+        }
+
+        // Ενημέρωση του energy bar
+        $('.energy-bar').css({
+            'width': `${energyLevel}%`,
+            'background-color': energyLevel > 66 ? '#FFD700' : // Χρυσό
+                              energyLevel > 33 ? '#FFA500' : // Πορτοκαλί
+                              '#FF0000' // Κόκκινο
+        });
+        
+        // Ενημέρωση του χρόνου τελευταίας ενημέρωσης
+        lastEnergyUpdate = now;
+    }
+
+    function showWindAlert() {
+        const randomDirection = directions[Math.floor(Math.random() * directions.length)];
+        const alertElement = $('.wind-alert');
+        const windDamage = Math.floor(Math.random() * (15 - 5 + 1)) + 5;
+        
+        alertElement
+            .html(`<strong>Προειδοποίηση Ανέμου!</strong><br>Ισχυροί άνεμοι πλησιάζουν από ${randomDirection}<br>Πιθανή ζημιά: ${windDamage}%`)
+            .addClass('show');
+
+        setTimeout(() => {
+            // Check if the active cover matches the wind direction
+            if (activeCoverDirection === randomDirection) {
+                showMessage('Το προστατευτικό πανί προστάτεψε τη σκηνή από τους ανέμους!');
+            } else {
+                tentHealth = Math.max(0, tentHealth - windDamage);
+                updateTentHealth();
+                showMessage(`Η σκηνή υπέστη ζημιά ${windDamage}% από τους ισχυρούς ανέμους!`);
+            }
+        }, 15000);
+
+        setTimeout(() => {
+            alertElement.removeClass('show');
+        }, 15000);
+    }
+
+    function createSubWindow(title) {
+        $(".container").empty();
+        $('.message-container').hide();
+        
+        // Create window container
+        const windowContainer = $('<div>').css({
+            'width': '100%',
+            'height': '100%',
+            'padding': '2rem',
+            'display': 'flex',
+            'flex-direction': 'column',
+            'gap': '20px'
+        });
+
+        // Create header with back button and title
+        const header = $('<div>').css({
+            'display': 'flex',
+            'align-items': 'center',
+            'gap': '20px',
+            'padding': '10px 0'
+        });
+
+        // Back button
+        const backButton = $('<button>')
+            .text('←')
+            .css({
+                'background-color': '#9A7E6F',
+                'color': 'white',
+                'padding': '10px 20px',
+                'border-radius': '8px',
+                'font-size': '24px',
+                'font-weight': 'bold',
+                'cursor': 'pointer',
+                'transition': 'background-color 0.3s ease'
+            })
+            .hover(
+                function() { $(this).css('background-color', '#826a5d'); },
+                function() { $(this).css('background-color', '#9A7E6F'); }
+            )
+            .click(function() {
+                showMessage("Κεντρικό μενού")
+                mainMenu();
+            });
+
+        // Title
+        const windowTitle = $('<h2>')
+            .text(title)
+            .css({
+                'font-size': '32px',
+                'color': '#54473F',
+                'margin': '0'
+            });
+
+        header.append(backButton, windowTitle);
+        windowContainer.append(header);
+
+        // Add content area for future use
+        const contentArea = $('<div>').css({
+            'flex-grow': '1',
+            'background-color': 'rgba(154, 126, 111, 0.1)',
+            'border-radius': '12px',
+            'padding': '20px'
+        });
+
+        if (title === 'Τοποθέτηση Προστατευτικών Πανιών') {
+            placeProtective(contentArea);
+        }else if(title === 'Διαχείρηση Ενέργειας'){
+            energyManagement(contentArea);
+        }else if(title === 'Καιρικές Συνθήκες'){
+            createWeatherChart(contentArea);
+        }else if(title === 'Ρύθμιση Φωτισμού'){
+            lightSettings(contentArea);
+        }else if(title === 'Πλοήγηση Σε Καταφύγια'){
+            navigateToShelter(contentArea);
+        }else if(title === 'Επικοινωνία Με Υπαλλήλους'){
+            contact(contentArea);
+        }else if(title === 'Τουριστική Πλοήγηση'){
+            touristNavigation(contentArea);
+        }else if(title === 'Προβολή Εξωτερικού Χώρου'){
+            showOutdoorView(contentArea);
+        }
+    
+        windowContainer.append(contentArea);
+        $(".container").append(windowContainer);
+    }
+
+    function createWeatherChart(contentArea) {
+
+        showMessage('Δείτε αναλυτικά την πρόβλεψη καιρού και θερμοκρασίας για τις επόμενες ώρες ώστε να προγραμματίσετε καλύτερα τις δραστηριότητές σας.');
+
+        const icons = [
+            '🌥️','🌥️','⛅','⛅','🌤️','🌤️','☀️','☀️','☀️','☀️','🌤️','🌦️','☁️','☁️','🌧️','🌧️','⛈️','⛈️','⛈️','🌧️','🌙','🌙','🌙','🌥️'
+        ];
+
+        // icons = ['⭐', '🌙', '☀️', '⛅', '🌤️', '🌥️', 
+        //     '☁️', '🌦️', '🌧️', '⛈️', '🌩️', '🌨️',
+        //     '🌪️', '🌫️', '🌈', '🌡️', '💧', '☔',
+        //     '⚡', '❄️', '☃️', '⛄', '🌊', '🌍']
+
+        const values = [13, 14.5, 16, 17.5, 19, 20.5, 22, 23.5, 25, 26.5, 28, 27, 26, 25, 24, 23, 21.9, 20.8, 19.7, 18.6, 17.5, 16.4, 15.3, 14.1];
+
+        // Create chart container with flex centering
+        const chartContainer = $('<div>').css({
+            'width': '100%',
+            'height': '100%',
+            'display': 'flex',
+            'flex-direction': 'column',
+            'justify-content': 'center',
+            'align-items': 'center', // Center horizontally
+            'gap': '20px',
+            'min-height': '500px'
+        });
+
+        // Create scroll container with 50% width
+        const scrollContainer = $('<div>').css({
+            'width': '50%',
+            'overflow-x': 'auto',
+            'overflow-y': 'hidden',
+            'padding-bottom': '20px', // Space for scrollbar
+            'background': '#f5f5f5',
+            'border-radius': '15px',
+            'border': '3px solid rgb(154, 126, 111)',
+
+        });
+
+        // Create bars container with fixed width for 6 columns
+        const graphContainer = $('<div>').css({
+            'display': 'flex',
+            'justify-content': 'flex-start',
+            'align-items': 'flex-end',
+            'height': '300px',
+            'padding': '20px 20px 20px 0',
+            'min-width': 'max-content' // Allows container to grow based on content
+        });
+
+        // Find max value for normalization
+        const maxValue = Math.max(...values);
+
+        // Calculate width for each bar container
+        const barWidth = '100px'; // Fixed width for each bar since we're using 50% container width
+
+        // Create bars
+        values.forEach((value, index) => {
+            const barContainer = $('<div>').css({
+                'display': 'flex',
+                'flex-direction': 'column',
+                'align-items': 'center',
+                'flex': '0 0 auto', // Prevent shrinking and growing
+                'width': barWidth,
+                'margin': '0 10px'
+            });
+
+            // Icon space
+            const iconSpace = $('<div>').css({
+                'height': '24px',
+                'width': '24px',
+                'margin-bottom': '8px',
+                'display': 'flex',
+                'justify-content': 'center',
+                'align-items': 'center',
+                'font-size': '20px',
+                'cursor': 'pointer'
+            }).html(icons[index]);
+
+            let hour = (index+8)%24
+            let tempOfHour;
+
+            if(hour >= 8 && hour <= 18){
+                tempOfHour = (13 + index*1.5).toFixed(1);
+            }else if(hour > 18 && hour <= 23){
+                tempOfHour = (38 - index).toFixed(1);
+            }else{
+                tempOfHour = (21.9 - (index-16) * 1.1).toFixed(1);
+            }
+
+            const label = $('<div>').css({
+                'font-size': '12px',
+                'margin-top': '8px',
+                'margin-bottom': '4px'
+            }).text(`${tempOfHour} °C`);
+
+            iconSpace.attr('title', `Τιμή: ${value}`);
+
+            const height = (value / maxValue) * 200;
+            const hue = (value / maxValue) * 120;
+            
+            const bar = $('<div>').css({
+                'width': '100%',
+                'height': height + 'px',
+                'background': `hsl(${hue}, 70%, 50%)`,
+                'transition': 'height 0.3s ease, background 0.3s ease',
+                'border-radius': '4px 4px 0 0'
+            });
+
+            const label2 = $('<div>').css({
+                'font-size': '12px',
+                'margin-top': '8px'
+            }).text(`${(index+8)%24}:00`);
+
+            // Function to update bar height and color
+            function updateBar(newValue) {
+                const newHeight = (newValue / maxValue) * 200;
+                const newHue = (newValue / maxValue) * 120;
+                bar.css({
+                    'height': newHeight + 'px',
+                    'background': `hsl(${newHue}, 70%, 50%)`
+                });
+                label2.text(newValue);
+                iconSpace.attr('title', `Τιμή: ${newValue}`);
+            }
+
+            barContainer.append(iconSpace, label, bar, label2);
+            graphContainer.append(barContainer);
+
+            bar.hover(
+                function() { $(this).css('opacity', '0.8'); },
+                function() { $(this).css('opacity', '1'); }
+            );
+
+            iconSpace.on('click', function() {
+                alert(`Τιμή για ${icons[index]}: ${value}`);
+            });
+        });
+
+        // Add scrollbar styling
+        scrollContainer.css({
+            'scrollbar-width': 'thin',
+            'scrollbar-color': '#9A7E6F transparent'
+        });
+
+        // Webkit scrollbar styling
+        const scrollbarCSS = `
+            .weather-chart-scroll::-webkit-scrollbar {
+                height: 8px;
+            }
+            .weather-chart-scroll::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            .weather-chart-scroll::-webkit-scrollbar-thumb {
+                background-color: #9A7E6F;
+                border-radius: 4px;
+            }
+        `;
+        
+        // Add CSS to head
+        $('<style>')
+            .text(scrollbarCSS)
+            .appendTo('head');
+
+        scrollContainer.addClass('weather-chart-scroll');
+        
+        scrollContainer.append(graphContainer);
+        chartContainer.append(scrollContainer);
+        $(contentArea).append(chartContainer);
+    }
+
+    function placeProtective(contentArea) {
+
+        showMessage('Επιλέξτε την κατεύθυνση τοποθέτησης του προστατευτικού πανιού για να προστατέψετε τη σκηνή σας από τους ισχυρούς ανέμους.');
+
+        // Δημιουργία container με grid layout
+        const container = $('<div>').css({
+            'display': 'grid',
+            'grid-template-columns': '1fr 1fr',
+            'gap': '30px',
+            'padding': '20px',
+            'height': '100%'
+        });
+
+        // Αριστερό panel - Οπτικοποίηση σκηνής
+        const visualPanel = $('<div>').css({
+            'background-color': 'white',
+            'border-radius': '15px',
+            'padding': '20px',
+            'position': 'relative',
+            'display': 'flex',
+            'justify-content': 'center',
+            'align-items': 'center',
+            'box-shadow': '0 4px 6px rgba(0, 0, 0, 0.1)'
+        });
+
+        // Δεξί panel - Πληροφορίες και στατιστικά
+        const infoPanel = $('<div>').css({
+            'background-color': 'white',
+            'border-radius': '15px',
+            'padding': '30px',
+            'display': 'flex',
+            'flex-direction': 'column',
+            'gap': '25px',
+            'box-shadow': '0 4px 6px rgba(0, 0, 0, 0.1)'
+        });
+
+        // Δημιουργία σκηνής με πανιά
+        const tent = $('<div>').css({
+            'width': '250px',
+            'height': '250px',
+            'background-color': '#9A7E6F',
+            'position': 'relative',
+            'border-radius': '10px',
+            'background-image': 'url("topdownTent3.png")',
+            'background-size': 'cover',
+            'background-position': 'center',
+            'transition': 'transform 0.3s ease',
+            'transform-style': 'preserve-3d',
+            'transform': 'perspective(1000px) rotateX(20deg)'
+        });
+
+        // Προσθήκη σκιάς κάτω από τη σκηνή
+        const shadow = $('<div>').css({
+            'position': 'absolute',
+            'bottom': '-20px',
+            'left': '10%',
+            'width': '80%',
+            'height': '20px',
+            'background': 'radial-gradient(ellipse at center, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 70%)',
+            'border-radius': '50%',
+            'transform': 'rotateX(60deg)'
+        });
+        tent.append(shadow);
+
+        // Δημιουργία επεξηγηματικού κειμένου
+        const title = $('<h2>').text('Προστατευτικά Πανιά').css({
+            'font-size': '24px',
+            'color': '#54473F',
+            'margin-bottom': '20px'
+        });
+
+        const description = $('<p>').text('Τοποθετήστε το προστατευτικό πανί στην κατάλληλη πλευρά για να προστατέψετε τη σκηνή από τους ανέμους.').css({
+            'color': '#666',
+            'line-height': '1.6',
+            'margin-bottom': '30px'
+        });
+
+        // Δημιουργία κουμπιών κατεύθυνσης με εικονίδια
+        const directions = [
+            { name: 'north', icon: '↑', label: 'Βόρεια' },
+            { name: 'east', icon: '→', label: 'Ανατολικά' },
+            { name: 'south', icon: '↓', label: 'Νότια' },
+            { name: 'west', icon: '←', label: 'Δυτικά' }
+        ];
+
+        const directionsGrid = $('<div>').css({
+            'display': 'grid',
+            'grid-template-columns': 'repeat(2, 1fr)',
+            'gap': '15px',
+            'margin-bottom': '30px'
+        });
+
+        directions.forEach(dir => {
+            const button = $('<button>')
+                .addClass('direction-button')
+                .attr('data-direction', dir.name)
+                .css({
+                    'display': 'flex',
+                    'align-items': 'center',
+                    'gap': '10px',
+                    'padding': '15px 20px',
+                    'background-color': activeCoverDirection === dir.name ? '#4CAF50' : 'white',
+                    'color': activeCoverDirection === dir.name ? 'white' : '#54473F',
+                    'border': '2px solid ' + (activeCoverDirection === dir.name ? '#4CAF50' : '#E0E0E0'),
+                    'border-radius': '12px',
+                    'cursor': 'pointer',
+                    'transition': 'all 0.3s ease',
+                    'font-size': '16px',
+                    'font-weight': '500',
+                    'width': '100%'
+                })
+                .hover(
+                    function() {
+                        if (activeCoverDirection !== dir.name) {
+                            $(this).css({
+                                'background-color': '#F5F5F5',
+                                'transform': 'translateY(-2px)'
+                            });
+                        }
+                    },
+                    function() {
+                        if (activeCoverDirection !== dir.name) {
+                            $(this).css({
+                                'background-color': 'white',
+                                'transform': 'translateY(0)'
+                            });
+                        }
+                    }
+                );
+
+            const icon = $('<span>').text(dir.icon).css({
+                'font-size': '20px',
+                'font-weight': 'bold'
+            });
+
+            const label = $('<span>').text(dir.label);
+
+            button.append(icon, label);
+            directionsGrid.append(button);
+        });
+
+        // Δημιουργία status panel
+        const statusPanel = $('<div>').css({
+            'background-color': '#F8F9FA',
+            'border-radius': '12px',
+            'padding': '20px',
+            'margin-top': 'auto'
+        });
+
+        const statusTitle = $('<h3>').text('Κατάσταση Προστασίας').css({
+            'font-size': '18px',
+            'color': '#54473F',
+            'margin-bottom': '15px'
+        });
+
+        const statusText = $('<p>').text(
+            activeCoverDirection 
+                ? `Ενεργή προστασία: ${getDirectionInGreek(activeCoverDirection)} πλευρά` 
+                : 'Δεν υπάρχει ενεργή προστασία'
+        ).css({
+            'color': '#666',
+            'margin-bottom': '10px'
+        });
+
+        const windStatus = $('<div>').css({
+            'display': 'flex',
+            'align-items': 'center',
+            'gap': '10px',
+            'margin-top': '15px'
+        });
+
+        const windIcon = $('<span>').text('💨').css('font-size', '20px');
+        const windText = $('<span>').text('Παρακολούθηση ανέμων ενεργή').css('color', '#666');
+
+        windStatus.append(windIcon, windText);
+        statusPanel.append(statusTitle, statusText, windStatus);
+
+        // Δημιουργία και τοποθέτηση προστατευτικών πανιών
+        const coverPositions = [
+            { direction: 'north', rotation: 0 },
+            { direction: 'east', rotation: 90 },
+            { direction: 'south', rotation: 180 },
+            { direction: 'west', rotation: 270 }
+        ];
+
+        coverPositions.forEach((pos) => {
+            const cover = $('<div>')
+                .addClass('protective-cover')
+                .attr('data-direction', pos.direction)
+                .css({
+                    'width': '0',
+                    'height': '0',
+                    'border-left': '25px solid transparent',
+                    'border-right': '25px solid transparent',
+                    'border-bottom': '50px solid #54473F',
+                    'position': 'absolute',
+                    'cursor': 'pointer',
+                    'transition': 'all 0.3s ease',
+                    'opacity': activeCoverDirection === pos.direction ? '1' : '0.3',
+                    'border-bottom-color': activeCoverDirection === pos.direction ? '#4CAF50' : '#54473F',
+                    'filter': 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
+                });
+
+            // Τοποθέτηση των πανιών
+            switch (pos.direction) {
+                case 'north':
+                    cover.css({
+                        'top': '-70px',
+                        'left': '50%',
+                        'transform': 'translateX(-50%)'
+                    });
+                    break;
+                case 'east':
+                    cover.css({
+                        'top': '50%',
+                        'right': '-70px',
+                        'transform': 'translateY(-50%) rotate(90deg)'
+                    });
+                    break;
+                case 'south':
+                    cover.css({
+                        'bottom': '-70px',
+                        'left': '50%',
+                        'transform': 'translateX(-50%) rotate(180deg)'
+                    });
+                    break;
+                case 'west':
+                    cover.css({
+                        'top': '50%',
+                        'left': '-70px',
+                        'transform': 'translateY(-50%) rotate(270deg)'
+                    });
+                    break;
+            }
+
+            tent.append(cover);
+        });
+
+        // Event handlers για τα κουμπιά κατεύθυνσης
+        directionsGrid.find('.direction-button').click(function() {
+            const direction = $(this).attr('data-direction');
+            const allButtons = directionsGrid.find('.direction-button');
+            
+            if (activeCoverDirection === direction) {
+                // Αφαίρεση ενεργού πανιού
+                activeCoverDirection = null;
+                allButtons.css({
+                    'background-color': 'white',
+                    'color': '#54473F',
+                    'border-color': '#E0E0E0'
+                });
+                tent.find('.protective-cover').css({
+                    'opacity': '0.3',
+                    'border-bottom-color': '#54473F'
+                });
+                statusText.text('Δεν υπάρχει ενεργή προστασία');
+                showMessage('Το προστατευτικό πανί αφαιρέθηκε');
+            } else {
+                // Ενεργοποίηση νέου πανιού
+                activeCoverDirection = direction;
+                allButtons.css({
+                    'background-color': 'white',
+                    'color': '#54473F',
+                    'border-color': '#E0E0E0'
+                });
+                $(this).css({
+                    'background-color': '#4CAF50',
+                    'color': 'white',
+                    'border-color': '#4CAF50'
+                });
+                tent.find('.protective-cover').css({
+                    'opacity': '0.3',
+                    'border-bottom-color': '#54473F'
+                });
+                tent.find(`.protective-cover[data-direction="${direction}"]`).css({
+                    'opacity': '1',
+                    'border-bottom-color': '#4CAF50'
+                });
+                statusText.text(`Ενεργή προστασία: ${getDirectionInGreek(direction)} πλευρά`);
+                showMessage(`Το προστατευτικό πανί τοποθετήθηκε στην ${getDirectionInGreek(direction)} πλευρά`);
+            }
+        });
+
+        // Συναρμολόγηση των panels
+        visualPanel.append(tent);
+        infoPanel.append(title, description, directionsGrid, statusPanel);
+        container.append(infoPanel,visualPanel);
+        contentArea.append(container);
+
+        // Προσθήκη hover effect στη σκηνή
+        tent.hover(
+            function() {
+                $(this).css('transform', 'perspective(1000px) rotateX(25deg) scale(1.02)');
+            },
+            function() {
+                $(this).css('transform', 'perspective(1000px) rotateX(20deg) scale(1)');
+            }
+        );
+    }
+
+    function createCoverIndicator() {
+        // Αφαίρεση προηγούμενου indicator αν υπάρχει
+        $('.cover-indicator').remove();
+        
+        // Δημιουργία container για το indicator
+        const indicatorContainer = $('<div>')
+            .addClass('cover-indicator')
+            .css({
+                'position': 'absolute',
+                'top': '50%',
+                'left': '50%',
+                'transform': 'translate(-50%, -50%)',
+                'width': '200px',
+                'height': '200px',
+                'pointer-events': 'none'
+            });
+
+        // Δημιουργία indicator μόνο για την ενεργή κατεύθυνση
+        if (activeCoverDirection) {
+            const positions = {
+                north: { top: '-60px', left: '50%', transform: 'translateX(-50%)' },
+                east: { top: '50%', right: '-60px', transform: 'translateY(-50%) rotate(90deg)' },
+                south: { bottom: '-60px', left: '50%', transform: 'translateX(-50%) rotate(180deg)' },
+                west: { top: '50%', left: '-60px', transform: 'translateY(-50%) rotate(270deg)' }
+            };
+
+            const indicator = $('<div>')
+                .addClass('cover-indicator-' + activeCoverDirection)
+                .css({
+                    'position': 'absolute',
+                    'width': '0',
+                    'height': '0',
+                    'border-left': '20px solid transparent',
+                    'border-right': '20px solid transparent',
+                    'border-bottom': '40px solid #4CAF50',
+                    'opacity': '1',
+                    ...positions[activeCoverDirection]
+                });
+            indicatorContainer.append(indicator);
+        }
+
+        return indicatorContainer;
+    }
+
+    function updateMainMenuTent() {
+        // Προσθήκη του tent με το indicator στο grid
+        const tentDiv = $(`#div${tentLocation.toString()}`);
+        if (tentDiv.length) {
+            const tentSpan = tentDiv.find('span');
+            const coverIndicator = createCoverIndicator();
+            tentSpan.append(coverIndicator);
+        }
+    }
+
+    function getDirectionInGreek(direction) {
+        const directions = {
+            'north': 'βόρεια',
+            'south': 'νότια',
+            'east': 'ανατολική',
+            'west': 'δυτική'
+        };
+        return directions[direction] || direction;
+    }
+
+    function energyManagement(contentArea){
+
+        showMessage('Εδώ μπορείτε να διαχειριστείτε το απόθεμα ενέργειας της σκηνής σας. Ενεργοποιήστε ή απενεργοποιήστε συσκευές για να εξοικονομήσετε ενέργεια.');
+
+        // Content area logic for energy management
+        contentArea.css({
+            'display': 'grid',
+            'grid-template-columns': '1fr 1fr',
+            'gap': '20px'
+        });
+
+        // Left panel - Device controls
+        const deviceList = $('<div>').css({
+            'background-color': 'white',
+            'padding': '20px',
+            'border-radius': '8px',
+            'box-shadow': '0 2px 4px rgba(0,0,0,0.1)',
+            'display': 'flex',
+            'flex-direction': 'column'
+        });
+
+        devices.forEach(device => {
+            const deviceRow = $('<div>').css({
+                'display': 'flex',
+                'align-items': 'center',
+                'justify-content': 'space-between',
+                'margin-bottom': '15px',
+                'padding': '10px',
+                'border-bottom': '1px solid #eee'
+            });
+
+            const deviceImage = $('<img>').css({
+                'width': '60px',
+                'height': '60px',
+                'object-fit': 'cover',
+                'margin-right': '15px',
+                'border-radius': '8px',
+                'background-color': '#fbfbfb'
+            }).attr({
+                'src': `${device}.png`, 
+                'alt': device + ' image'
+            });
+
+            const deviceInfoContainer = $('<div>').css({
+                'display': 'flex',
+                'align-items': 'center'
+            });
+
+            const deviceName = $('<span>').text(device).css({
+                'font-size': '18px',
+                'color': '#54473F',
+                'margin-right': '15px'
+            });
+
+            const buttonGroup = $('<div>').css({
+                'display': 'flex',
+                'gap': '10px'
+            });
+
+            const onButton = $('<button>')
+                .text('ON')
+                .css({
+                    'padding': '5px 15px',
+                    'border-radius': '4px',
+                    'cursor': 'pointer',
+                    'transition': 'all 0.3s ease'
+                });
+
+            const offButton = $('<button>')
+                .text('OFF')
+                .css({
+                    'padding': '5px 15px',
+                    'border-radius': '4px',
+                    'cursor': 'pointer',
+                    'transition': 'all 0.3s ease',
+                    'background-color': '#FF5252',
+                    'color': 'white'
+                });
+
+            // Set initial button states based on deviceStates
+            if (deviceStates[device]) {
+                onButton.css({
+                    'background-color': '#4CAF50',
+                    'color': 'white'
+                });
+                offButton.css({
+                    'background-color': '#f5f5f5',
+                    'color': 'black'
+                });
+            } else {
+                onButton.css({
+                    'background-color': '#f5f5f5',
+                    'color': 'black'
+                });
+                offButton.css({
+                    'background-color': '#FF5252',
+                    'color': 'white'
+                });
+            }
+
+            // Button click handlers
+            onButton.click(function() {
+                deviceStates[device] = true;
+
+                // Add the device to the global list if not already there
+                if (!devicesOn.includes(device)) {
+                    devicesOn.push(device);
+                }
+
+                onButton.css({
+                    'background-color': '#4CAF50',
+                    'color': 'white'
+                });
+                offButton.css({
+                    'background-color': '#f5f5f5',
+                    'color': 'black'
+                });
+                updateControlPanel();
+            });
+
+            offButton.click(function() {
+                deviceStates[device] = false;
+
+                // Remove the device from the global list
+                const index = devicesOn.indexOf(device);
+                if (index > -1) {
+                    devicesOn.splice(index, 1);
+                }
+
+                onButton.css({
+                    'background-color': '#f5f5f5',
+                    'color': 'black'
+                });
+                offButton.css({
+                    'background-color': '#FF5252',
+                    'color': 'white'
+                });
+                updateControlPanel();
+            });
+
+            buttonGroup.append(onButton, offButton);
+            deviceInfoContainer.append(deviceName);
+            
+            const deviceRowContent = $('<div>').css({
+                'display': 'flex',
+                'align-items': 'center',
+                'width': '100%'
+            });
+
+            deviceRowContent.append(deviceImage, deviceInfoContainer);
+            deviceRow.append(deviceRowContent, buttonGroup);
+            deviceList.append(deviceRow);
+        });
+
+        const saveEnergyButton = $('<button>')
+            .text('Εξοικονόμηση Ενέργειας')
+            .css({
+                // 'margin-top': '150px', // Pushes the button to the bottom
+                'padding': '10px 15px',
+                'background-color': '#2196F3',
+                'color': 'white',
+                'border': 'none',
+                'border-radius': '4px',
+                'cursor': 'pointer',
+                'transition': 'background-color 0.3s ease',
+                'font-size': '16px',
+                'font-weight': 'bold',
+                'width': '100%'
+            })
+            .hover(
+                function() { $(this).css('background-color', '#1976D2'); },
+                function() { $(this).css('background-color', '#2196F3'); }
+            )
+            .click(function() {
+                // Turn off all devices
+                devices.forEach(device => {
+                    deviceStates[device] = false;
+                });
+
+                // Clear the devicesOn array
+                devicesOn.length = 0;
+
+                // Update device buttons to reflect off state
+                deviceList.find('button').each(function() {
+                    const $this = $(this);
+                    if ($this.text() === 'ON') {
+                        $this.css({
+                            'background-color': '#f5f5f5',
+                            'color': 'black'
+                        });
+                    } else if ($this.text() === 'OFF') {
+                        $this.css({
+                            'background-color': '#FF5252',
+                            'color': 'white'
+                        });
+                    }
+                });
+
+                // Update the control panel
+                updateControlPanel();
+            });
+        deviceList.append(saveEnergyButton);
+
+        // Right panel - Control panel
+        const controlPanel = $('<div>').css({
+            'background-color': 'white',
+            'padding': '20px',
+            'border-radius': '8px',
+            'box-shadow': '0 2px 4px rgba(0,0,0,0.1)'
+        });
+
+        const panelTitle = $('<h3>')
+            .text('Λίστα Ενεργών Συσκευών')
+            .css({
+                'margin-bottom': '20px',
+                'color': '#54473F',
+                'font-size': '24px'
+            });
+
+        const activeDevicesList = $('<div>').css({
+            'margin-bottom': '20px'
+        });
+
+        const energyConsumption = $('<div>').css({
+            'font-size': '18px',
+            'color': '#54473F',
+            'padding': '15px',
+            'background-color': '#f5f5f5',
+            'border-radius': '8px',
+            'margin-top': '20px'
+        });
+
+        controlPanel.append(panelTitle, activeDevicesList, energyConsumption);
+
+        function updateControlPanel() {
+            activeDevicesList.empty();
+
+            const activeDevices = Object.entries(deviceStates)
+                .filter(([, isActive]) => isActive)
+                .map(([device]) => device);
+            
+            if (activeDevices.length === 0) {
+                activeDevicesList.append(
+                    $('<p>')
+                        .text('Καμία Ενεργή Συσκευή')
+                        .css({
+                            'color': '#666',
+                            'font-style': 'italic'
+                        })
+                );
+            } else {
+                const deviceList = $('<ul>').css({
+                    'list-style-type': 'none',
+                    'padding': '0'
+                });
+                
+                activeDevices.forEach(device => {
+                    deviceList.append(
+                        $('<li>')
+                            .text(`▶ ${device}`)
+                            .css({
+                                'margin-bottom': '10px',
+                                'color': '#4CAF50'
+                            })
+                    );
+                });
+                
+                activeDevicesList.append(deviceList);
+            }
+            
+            const consumptionRate = activeDevices.length;
+            energyConsumption.text(`Κατανάλωση ενέργειας: ${consumptionRate}% ανά μισάωρο`);
+        }
+
+        contentArea.append(deviceList, controlPanel);
+
+        // Initial update
+        updateControlPanel();
+    }
+
+    function lightSettings(contentArea) {
+
+        showMessage('Προσαρμόστε το φωτισμό της σκηνής σας επιλέγοντας ανάμεσα σε διαφορετικά προφίλ και εντάσεις για μέγιστη άνεση.');
+
+        let pulseInterval;
+        let currentMode = 'natural';
+        let currentColor = '#FFD700';  // Warm yellow default
+        let isPulsing = false;
+        let pulseSpeed = 1000;
+        let currentPreset = null;
+
+        // Configuration objects
+        const presetConfigs = {
+            'Διάβασμα': {
+                color: '#FFF5E1',
+                brightness: 85,
+                isPulsing: false
+            },
+            'Χαλάρωση': {
+                color: '#E6E6FA',
+                brightness: 40,
+                isPulsing: false
+            },
+            'Ταινία': {
+                color: '#4169E1',
+                brightness: 30,
+                isPulsing: false
+            },
+            'Πάρτυ': {
+                color: '#FF69B4',
+                brightness: 90,
+                isPulsing: true,
+                pulseSpeed: 500
+            }
+        };
+
+        // Main container setup
+        contentArea.css({
+            'display': 'grid',
+            'grid-template-columns': '1fr 1fr',
+            'gap': '30px',
+            'height': '100%',
+            'padding': '30px',
+            'background-color': 'rgba(154, 126, 111, 0.1)'
+        });
+
+        // Create and append main panels
+        const controlPanel = createControlPanel();
+        const previewPanel = createPreviewPanel();
+        contentArea.append(controlPanel, previewPanel);
+
+        // Initial preview update
+        updatePreview();
+
+        // Panel Creation Functions
+        function createControlPanel() {
+            const panel = $('<div>').css({
+                'background-color': 'white',
+                'padding': '30px',
+                'border-radius': '20px',
+                'box-shadow': '0 4px 20px rgba(0,0,0,0.08)',
+                'display': 'flex',
+                'flex-direction': 'column',
+                'gap': '25px'
+            });
+
+            // Create sections
+            const modeSection = createModeSection();
+            const brightnessSection = createBrightnessSection();
+            const presetSection = createPresetSection();
+            const effectsSection = createEffectsSection();
+
+            // Assemble panel
+            panel.append(modeSection, brightnessSection, presetSection, effectsSection);
+            return panel;
+        }
+
+        function createModeSection() {
+            const section = $('<div>').css({
+                'display': 'flex',
+                'flex-direction': 'column',
+                'gap': '15px'
+            });
+
+            const title = $('<h3>')
+                .text('Λειτουργία Φωτισμού')
+                .css({
+                    'margin': '0',
+                    'color': '#212529',
+                    'font-size': '18px'
+                });
+
+            const modes = [
+                { name: 'Φυσικό', icon: '☀️', value: 'natural', color: '#FFD700' },
+                { name: 'Ζεστό', icon: '🌅', value: 'warm', color: '#FFA500' },
+                { name: 'Ψυχρό', icon: '❄️', value: 'cool', color: '#87CEEB' }
+            ];
+
+            const modeButtons = $('<div>').css({
+                'display': 'grid',
+                'grid-template-columns': 'repeat(3, 1fr)',
+                'gap': '10px'
+            });
+
+            modes.forEach(mode => {
+                const button = $('<button>')
+                    .css({
+                        'display': 'flex',
+                        'flex-direction': 'column',
+                        'align-items': 'center',
+                        'gap': '8px',
+                        'padding': '15px',
+                        'background-color': 'white',
+                        'border': '2px solid #e9ecef',
+                        'border-radius': '12px',
+                        'cursor': 'pointer',
+                        'transition': 'all 0.3s ease'
+                    })
+                    .hover(
+                        function() { $(this).css('transform', 'translateY(-2px)'); },
+                        function() { $(this).css('transform', 'translateY(0)'); }
+                    );
+
+                const icon = $('<span>').text(mode.icon).css('font-size', '24px');
+                const text = $('<span>').text(mode.name).css('font-weight', '500');
+
+                button.append(icon, text);
+
+                button.click(function() {
+                    modeButtons.find('button').css({
+                        'background-color': 'white',
+                        'border-color': '#e9ecef'
+                    });
+                    $(this).css({
+                        'background-color': `${mode.color}20`,
+                        'border-color': mode.color
+                    });
+                    currentMode = mode.value;
+                    currentColor = mode.color;
+                    currentPreset = null;
+                    updatePreview();
+                });
+
+                modeButtons.append(button);
+            });
+
+            section.append(title, modeButtons);
+            return section;
+        }
+
+        function createBrightnessSection() {
+            const section = $('<div>').css({
+                'display': 'flex',
+                'flex-direction': 'column',
+                'gap': '15px'
+            });
+
+            const header = $('<div>').css({
+                'display': 'flex',
+                'justify-content': 'space-between',
+                'align-items': 'center'
+            });
+
+            const title = $('<div>').css({
+                'display': 'flex',
+                'align-items': 'center',
+                'gap': '10px'
+            }).append(
+                $('<span>').text('💡').css('font-size', '20px'),
+                $('<span>').text('Φωτεινότητα').css({
+                    'font-weight': '500',
+                    'color': '#212529'
+                })
+            );
+
+            const value = $('<span>')
+                .text('100%')
+                .css({
+                    'color': '#868e96',
+                    'font-weight': '500'
+                })
+                .addClass('brightness-value');
+
+            const slider = $('<input>')
+                .attr({
+                    'type': 'range',
+                    'min': '0',
+                    'max': '100',
+                    'value': '100',
+                    'id': 'brightnessSlider'
+                })
+                .css({
+                    'width': '100%',
+                    'height': '6px',
+                    'accent-color': '#FFD700'
+                })
+                .on('input', function() {
+                    value.text($(this).val() + '%');
+                    updatePreview();
+                });
+
+            header.append(title, value);
+            section.append(header, slider);
+            return section;
+        }
+
+        function createPresetSection() {
+            const section = $('<div>').css({
+                'display': 'flex',
+                'flex-direction': 'column',
+                'gap': '15px'
+            });
+
+            const title = $('<div>').css({
+                'display': 'flex',
+                'align-items': 'center',
+                'gap': '10px'
+            }).append(
+                $('<span>').text('🎭').css('font-size', '20px'),
+                $('<span>').text('Προεπιλογές').css({
+                    'font-weight': '500',
+                    'color': '#212529'
+                })
+            );
+
+            const presets = [
+                { name: 'Διάβασμα', icon: '📚' },
+                { name: 'Χαλάρωση', icon: '🌙' },
+                { name: 'Ταινία', icon: '🎬' },
+                { name: 'Πάρτυ', icon: '✨' }
+            ];
+
+            const grid = $('<div>').css({
+                'display': 'grid',
+                'grid-template-columns': 'repeat(2, 1fr)',
+                'gap': '10px'
+            });
+
+            presets.forEach(preset => {
+                const button = $('<button>')
+                    .css({
+                        'display': 'flex',
+                        'align-items': 'center',
+                        'gap': '10px',
+                        'padding': '12px 15px',
+                        'background-color': 'white',
+                        'border': '2px solid #e9ecef',
+                        'border-radius': '12px',
+                        'cursor': 'pointer',
+                        'transition': 'all 0.3s ease'
+                    })
+                    .hover(
+                        function() { $(this).css('transform', 'translateY(-2px)'); },
+                        function() { $(this).css('transform', 'translateY(0)'); }
+                    );
+
+                const icon = $('<span>').text(preset.icon).css('font-size', '20px');
+                const text = $('<span>').text(preset.name).css('font-weight', '500');
+
+                button.append(icon, text);
+                button.click(function() {
+                    const config = presetConfigs[preset.name];
+                    currentPreset = preset.name;
+                    currentColor = config.color;
+                    $('#brightnessSlider').val(config.brightness);
+                    $('.brightness-value').text(config.brightness + '%');
+                    isPulsing = config.isPulsing;
+                    if (config.pulseSpeed) pulseSpeed = config.pulseSpeed;
+                    updatePreview();
+                });
+
+                grid.append(button);
+            });
+
+            section.append(title, grid);
+            return section;
+        }
+
+        function createEffectsSection() {
+            const section = $('<div>').css({
+                'display': 'flex',
+                'flex-direction': 'column',
+                'gap': '15px'
+            });
+
+            const title = $('<div>').css({
+                'display': 'flex',
+                'align-items': 'center',
+                'gap': '10px'
+            }).append(
+                $('<span>').text('✨').css('font-size', '20px'),
+                $('<span>').text('Effects').css({
+                    'font-weight': '500',
+                    'color': '#212529'
+                })
+            );
+
+            const pulseButton = $('<button>')
+                .text('Παλλόμενος Φωτισμός')
+                .css({
+                    'padding': '12px 20px',
+                    'background-color': 'white',
+                    'border': '2px solid #e9ecef',
+                    'border-radius': '12px',
+                    'cursor': 'pointer',
+                    'font-weight': '500',
+                    'transition': 'all 0.3s ease'
+                })
+                .click(function() {
+                    isPulsing = !isPulsing;
+                    $(this).css({
+                        'background-color': isPulsing ? '#FFD70020' : 'white',
+                        'border-color': isPulsing ? '#FFD700' : '#e9ecef'
+                    });
+                    updatePreview();
+                });
+
+            section.append(title, pulseButton);
+            return section;
+        }
+
+        function createPreviewPanel() {
+            const panel = $('<div>').css({
+                'background-color': 'white',
+                'border-radius': '20px',
+                'box-shadow': '0 4px 20px rgba(0,0,0,0.08)',
+                'position': 'relative',
+                'height': '100%',
+                'overflow': 'hidden'
+            });
+
+            const previewBox = $('<div>').css({
+                'position': 'absolute',
+                'top': '0',
+                'left': '0',
+                'right': '0',
+                'bottom': '0',
+                'background-image': 'url("forrestBackground3.png")',
+                'background-size': '100% 100%', // This will stretch the image both horizontally and vertically
+                'background-position': 'center'
+            });
+
+            // Το εφέ φωτισμού
+            const lightEffect = $('<div>')
+                .addClass('light-effect')
+                .css({
+                    'position': 'absolute',
+                    'width': '200px',
+                    'height': '200px',
+                    'left': '48%',
+                    'top': '58%',
+                    'transform': 'translate(-50%, -50%)',
+                    'border-radius': '50%',
+                    'filter': 'blur(50px)',
+                    'transition': 'all 0.3s ease',
+                    'mix-blend-mode': 'screen',
+                    'z-index': '2'
+                });
+
+            previewBox.append(lightEffect);
+            panel.append(previewBox);
+
+            return panel;
+        }
+
+        function updatePreview() {
+            const brightness = $('#brightnessSlider').val();
+            const lightEffect = $('.light-effect');
+            const darkOverlay = $('.dark-overlay');
+
+            if (pulseInterval) {
+                clearInterval(pulseInterval);
+            }
+
+            // Προσαρμογή του σκοτεινού overlay βάσει brightness
+            darkOverlay.css({
+                'background-color': `rgba(0, 0, 0, ${Math.max(0.3, 1 - brightness/100)})`
+            });
+
+            let overlayStyle = {
+                'background-color': currentColor,
+                'opacity': brightness / 100,
+                'box-shadow': `0 0 50px 25px ${currentColor}`
+            };
+
+            lightEffect.css({
+                'background-color': overlayStyle['background-color'],
+                'opacity': overlayStyle['opacity'],
+                'transform': 'scale(1)',
+                'box-shadow': overlayStyle['box-shadow']
+            });
+
+            if (isPulsing) {
+                let isExpanded = false;
+                pulseInterval = setInterval(() => {
+                    isExpanded = !isExpanded;
+                    lightEffect.css({
+                        'opacity': isExpanded ? overlayStyle['opacity'] * 0.5 : overlayStyle['opacity'],
+                        'transform': `scale(${isExpanded ? 1.2 : 1})`,
+                        'box-shadow': isExpanded ? 
+                            `0 0 70px 35px ${currentColor}` : 
+                            `0 0 50px 25px ${currentColor}`
+                    });
+                }, pulseSpeed);
+            }
+        }
+    }
+
+    function navigateToShelter(contentArea) {
+        $(contentArea).css({
+            'background-image': 'url("map2.jpg")',
+            'background-size': 'cover',
+            'background-position': 'center',
+            'width': '100%',
+            'height': '100%',
+            'z-index': '1',
+            'position': 'relative',
+            'padding': '0px'
+        }).attr('id', 'navMap');
+
+        createGrid(contentArea);
+        
+        // After grid is created, find and draw path
+        const path = findPath(tentLocation, shelterLocation);
+        if (path) {
+            // Draw the optimal path in green
+            drawPath(path);
+            
+            // Draw the direct line in red
+            drawDirectLine();
+            
+            showMessage("Βρέθηκε το συντομότερο μονοπάτι προς το καταφύγιο! Η πράσινη γραμμή δείχνει το ασφαλές μονοπάτι, ενώ η κόκκινη, την συντομότερη διαδρομή.");
+        } else {
+            showMessage("Δεν βρέθηκε διαθέσιμο μονοπάτι προς το καταφύγιο.");
+        }
+    }
+
+    function drawDirectLine() {
+        setTimeout(() => {
+            const navMap = $('#navMap');
+            
+            // Get tent and shelter positions
+            const tentCell = $(`#div${tentLocation}`);
+            const shelterCell = $(`#div${shelterLocation}`);
+            
+            const tentPos = tentCell.position();
+            const shelterPos = shelterCell.position();
+            
+            // Calculate center points
+            const startX = tentPos.left + tentCell.width()/2;
+            const startY = tentPos.top + tentCell.height()/2;
+            const endX = shelterPos.left + shelterCell.width()/2;
+            const endY = shelterPos.top + shelterCell.height()/2;
+            
+            // Calculate midpoint for image placement
+            const midX = (startX + endX) / 2;
+            const midY = (startY + endY) / 2;
+            
+            // Create direct line
+            const directLine = $('<div>').addClass('direct-line').css({
+                'position': 'absolute',
+                'height': '6px',
+                'background-color': '#FF4444',
+                'transform-origin': 'left center',
+                'z-index': '999',
+                'box-shadow': '0 0 8px rgba(255, 68, 68, 0.5)',
+                'animation': 'directLinePulse 2s infinite'
+            });
+            
+            // Calculate line length and angle
+            const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+            const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+            
+            directLine.css({
+                'width': `${length}px`,
+                'left': `${startX}px`,
+                'top': `${startY}px`,
+                'transform': `rotate(${angle}deg)`
+            });
+            
+            // Create container for image
+            const imageContainer = $('<div>').addClass('distance-image-container').css({
+                'position': 'absolute',
+                'left': `${midX - 25}px`, // Adjust based on image size
+                'top': `${midY - 25}px`, // Adjust based on image size
+                'z-index': '1000',
+                'background-color': 'white',
+                'border-radius': '50%',
+                'padding': '5px',
+                'box-shadow': '0 0 10px rgba(0,0,0,0.2)',
+                'display': 'flex',
+                'justify-content': 'center',
+                'align-items': 'center',
+                'width': '50px',
+                'height': '50px'
+            });
+
+            // Create image element
+            const image = $('<img>').attr({
+                'src': 'thunder.png',
+                'alt': 'Thunder Icon'
+            }).css({
+                'width': '50px',
+                'height': '50px',
+                'object-fit': 'contain'
+            });
+
+            // Add keyframe animation for the direct line
+            const keyframeStyle = `
+                @keyframes directLinePulse {
+                    0% { opacity: 0.3; }
+                    50% { opacity: 0.8; }
+                    100% { opacity: 0.3; }
+                }
+                @keyframes floatAnimation {
+                    0% { transform: translateY(0px); }
+                    50% { transform: translateY(-5px); }
+                    100% { transform: translateY(0px); }
+                }
+            `;
+            
+            // Add the keyframe style if it doesn't exist
+            if (!$('style:contains(directLinePulse)').length) {
+                $('<style>').text(keyframeStyle).appendTo('head');
+            }
+
+            // Add floating animation to image container
+            imageContainer.css('animation', 'floatAnimation 2s ease-in-out infinite');
+            
+            // Append elements
+            imageContainer.append(image);
+            navMap.append(directLine, imageContainer);
+        }, 100);
+    }
+
+    function getNeighbors(cell) {
+        // const connections = [
+        //     ['11', '12'], ['12', '13'], 
+        //     ['13', '22'], ['21', '22'],
+        //     ['22', '23'], ['23', '33'],
+        //     ['33', '32'], ['31', '32']
+        // ];
+
+        const connections = [
+            ['11', '21'], ['21', '22'], 
+            ['12', '22'], ['12', '13'],
+            ['23', '13'], ['23', '33'],
+            ['32', '22'], ['31', '32']
+        ];
+        
+        return connections.filter(conn => 
+            conn.includes(cell)).map(conn => 
+            conn[0] === cell ? conn[1] : conn[0]);
+    }
+
+    function findPath(start, end) {
+        const queue = [[start]];
+        const visited = new Set([start]);
+        
+        while (queue.length > 0) {
+            const path = queue.shift();
+            const currentCell = path[path.length - 1];
+            
+            if (currentCell === end) {
+                return path;
+            }
+            
+            const neighbors = getNeighbors(currentCell);
+            for (const neighbor of neighbors) {
+                if (!visited.has(neighbor)) {
+                    visited.add(neighbor);
+                    queue.push([...path, neighbor]);
+                }
+            }
+        }
+        return null;
+    }
+
+    function drawPath(path) {
+        // Remove existing paths
+        $('.path-line').remove();
+        
+        if (!path) return;
+
+        // Wait for a brief moment to ensure DOM is rendered
+        setTimeout(() => {
+            const gridContainer = $('.gridDiv');
+            const navMap = $('#navMap');
+            
+            for (let i = 0; i < path.length - 1; i++) {
+                const start = path[i];
+                const end = path[i + 1];
+                
+                // Get cell positions relative to the grid
+                const startCell = $(`#div${start}`);
+                const endCell = $(`#div${end}`);
+                
+                const startPos = startCell.position();
+                const endPos = endCell.position();
+                
+                // Calculate center points
+                const startX = startPos.left + startCell.width()/2;
+                const startY = startPos.top + startCell.height()/2;
+                const endX = endPos.left + endCell.width()/2;
+                const endY = endPos.top + endCell.height()/2;
+                
+                // Create path line
+                const line = $('<div>').addClass('path-line').css({
+                    'position': 'absolute',
+                    'height': '6px',
+                    'background-color': '#4CAF50',
+                    'transform-origin': 'left center',
+                    'z-index': '1000'
+                });
+                
+                // Calculate line length and angle
+                const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+                const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+                
+                line.css({
+                    'width': `${length}px`,
+                    'left': `${startX}px`,
+                    'top': `${startY}px`,
+                    'transform': `rotate(${angle}deg)`
+                });
+                
+                navMap.append(line);
+            }
+        }, 100);
+    }
+
+    function contact(contentArea) {
+
+        showMessage('Παραγγείλτε φαγητό ή ενημερωθείτε για τις προγραμματισμένες εκδηλώσεις.');
+
+        const buttonContainer = $('<div>').css({
+            'display': 'flex',
+            'gap': '30px',
+            'justify-content': 'center',
+            'align-items': 'center',
+            'height': '100%'
+        });
+
+        const buttons = [
+            { text: 'Παραγγείλτε Φαγητό', image: 'dish.png', action: showFoodOrder },
+            { text: 'Προσεχείς Εκδηλώσεις', image: 'event.png', action: showEvents }
+        ];
+
+        buttons.forEach(button => {
+            const btn = $('<button>').css({
+                'display': 'flex',
+                'align-items': 'center',
+                'gap': '15px',
+                'padding': '25px 40px',
+                'background-color': '#9A7E6F',
+                'color': 'white',
+                'border': 'none',
+                'border-radius': '12px',
+                'font-size': '24px',
+                'font-weight': 'bold',
+                'cursor': 'pointer',
+                'transition': 'all 0.3s ease',
+                'width': '400px'
+            })
+            .hover(
+                function() { 
+                    $(this).css({
+                        'background-color': '#826a5d',
+                        'transform': 'translateY(-2px)'
+                    }); 
+                },
+                function() { 
+                    $(this).css({
+                        'background-color': '#9A7E6F',
+                        'transform': 'translateY(0)'
+                    }); 
+                }
+            );
+
+            const img = $('<img>')
+                .attr('src', button.image)
+                .css({
+                    'width': '40px',
+                    'height': '40px',
+                    'object-fit': 'contain'
+                });
+                
+            const text = $('<span>').text(button.text);
+
+            btn.append(img, text);
+            if (button.action) {
+                btn.click(button.action);
+            }
+            buttonContainer.append(btn);
+        });
+
+        contentArea.append(buttonContainer);
+    }
+
+    function showFoodOrder() {
+        $(".container").empty();
+        const windowContainer = $('<div>').css({
+            'width': '100%',
+            'height': '100%',
+            'padding': '2rem',
+            'display': 'flex',
+            'flex-direction': 'column',
+            'gap': '20px'
+        });
+
+        // Header
+        const header = $('<div>').css({
+            'display': 'flex',
+            'align-items': 'center',
+            'gap': '20px',
+            'padding': '10px 0'
+        });
+
+        const backButton = $('<button>')
+            .text('←')
+            .css({
+                'background-color': '#9A7E6F',
+                'color': 'white',
+                'padding': '10px 20px',
+                'border-radius': '8px',
+                'font-size': '24px',
+                'font-weight': 'bold',
+                'cursor': 'pointer',
+                'transition': 'background-color 0.3s ease'
+            })
+            .hover(
+                function() { $(this).css('background-color', '#826a5d'); },
+                function() { $(this).css('background-color', '#9A7E6F'); }
+            )
+            .click(function() {
+                createSubWindow('Επικοινωνία Με Υπαλλήλους');
+            });
+
+        const windowTitle = $('<h2>')
+            .text('Παραγγείλτε Φαγητό')
+            .css({
+                'font-size': '32px',
+                'color': '#54473F',
+                'margin': '0'
+            });
+
+        header.append(backButton, windowTitle);
+        windowContainer.append(header);
+
+        // Panels Container
+        const panelsContainer = $('<div>').css({
+            'display': 'grid',
+            'grid-template-columns': '1fr 3fr',
+            'gap': '30px',
+            'height': 'calc(100% - 80px)',
+            'margin-top': '20px'
+        });
+
+        // Left Panel
+        const leftPanel = $('<div>').css({
+            'background-color': 'white',
+            'border-radius': '15px',
+            'padding': '20px',
+            'box-shadow': '0 4px 6px rgba(0, 0, 0, 0.1)',
+            'height': '100%',
+            'overflow-y': 'auto'
+        });
+
+        // Create menu list
+        const menuList = $('<div>').css({
+            'display': 'flex',
+            'flex-direction': 'column',
+            'gap': '20px'
+        });
+
+        // Προσθήκη του style για το scrollbar μόνο μία φορά
+        if (!$('style:contains(menu-items-list)').length) {
+            const scrollbarStyle = `
+                .menu-items-list::-webkit-scrollbar {
+                    width: 8px;
+                }
+                .menu-items-list::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+                .menu-items-list::-webkit-scrollbar-thumb {
+                    background-color: #9A7E6F;
+                    border-radius: 4px;
+                }
+            `;
+            $('<style>').text(scrollbarStyle).appendTo('head');
+        }
+
+        const categories = [
+            { 
+                name: 'Πρωινό (06:00-12:00)', 
+                items: [
+                    {
+                        name: 'Ομελέτα με τυρί',
+                        image: 'egg.png',
+                        description: 'Αφράτη ομελέτα με τυρί γραβιέρα και φρέσκα μυρωδικά'
+                    },
+                    {
+                        name: 'Continental Breakfast',
+                        image: 'continental.png',
+                        description: 'Καφές, χυμός, κρουασάν, μαρμελάδα και βούτυρο'
+                    },
+                    {
+                        name: 'Γιαούρτι με μέλι και καρύδια',
+                        image: 'yogurt.png',
+                        description: 'Ελληνικό γιαούρτι με θυμαρίσιο μέλι, καρύδια και φρέσκα φρούτα'
+                    }
+                ]
+            },
+            { 
+                name: 'Μεσημεριανό (12:00-18:00)', 
+                items: [
+                    {
+                        name: 'Μοσχαρίσια μπριζόλα με πατάτες',
+                        image: 'meatSteak.png',
+                        description: 'Ζουμερή μπριζόλα με πατάτες φούρνου και σάλτσα μανιταριών'
+                    },
+                    {
+                        name: 'Σαλάτα του Σεφ',
+                        image: 'salad.png',
+                        description: 'Φρέσκα λαχανικά, τυρί, ζαμπόν και σως vinaigrette'
+                    },
+                    {
+                        name: 'Κοτόπουλο στη σχάρα',
+                        image: 'chicken.png',
+                        description: 'Στήθος κοτόπουλου μαριναρισμένο με μυρωδικά, πατάτες φούρνου και σαλάτα'
+                    }
+                ]
+            },
+            { 
+                name: 'Βραδινό (18:00-24:00)', 
+                items: [
+                    {
+                        name: 'Σολομός με ρύζι και λαχανικά',
+                        image: 'salmon.png',
+                        description: 'Φρέσκος σολομός σχάρας με ρύζι basmati και λαχανικά εποχής'
+                    },
+                    {
+                        name: 'Ριζότο Μανιταριών',
+                        image: 'risotto.png',
+                        description: 'Κρεμώδες ριζότο με διάφορα μανιτάρια και παρμεζάνα'
+                    },
+                                        {
+                        name: 'Πέννες Αραμπιάτα',
+                        image: 'pennes.png',
+                        description: 'Ζυμαρικά με πικάντικη σάλτσα ντομάτας, σκόρδο και φρέσκο βασιλικό'
+                    }
+                ]
+            }
+        ];
+
+        categories.forEach(category => {
+            const categoryContainer = $('<div>').css({
+                'cursor': 'pointer',
+                'transition': 'all 0.3s ease'
+            });
+
+            const categoryHeader = $('<div>').css({
+                'padding': '15px',
+                'background-color': '#9A7E6F',
+                'color': 'white',
+                'border-radius': '8px',
+                'font-weight': 'bold',
+                'font-size': '18px',
+                'margin-bottom': '10px',
+                'display': 'flex',
+                'justify-content': 'space-between',
+                'align-items': 'center'
+            }).text(category.name);
+
+            const itemsList = $('<div>').css({
+                'padding-left': '20px',
+                'display': 'none',
+                'max-height': '300px',
+                'overflow-y': 'auto',
+                'margin-bottom': '15px',
+                'scrollbar-width': 'thin',
+                'scrollbar-color': '#9A7E6F transparent'
+            }).addClass('menu-items-list');
+
+            category.items.forEach(item => {
+                const itemElement = $('<div>').css({
+                    'padding': '15px',
+                    'border-bottom': '1px solid #eee',
+                    'color': '#54473F',
+                    'display': 'flex',
+                    'align-items': 'start',
+                    'gap': '15px',
+                    'background-color': 'white'
+                });
+
+                const itemImage = $('<img>').attr({
+                    'src': item.image,
+                    'alt': item.name
+                }).css({
+                    'width': '80px',
+                    'height': '80px',
+                    'object-fit': 'cover',
+                    'border-radius': '8px'
+                });
+
+                const itemInfo = $('<div>').css({
+                    'flex-grow': '1',
+                    'display': 'flex',
+                    'flex-direction': 'column',
+                    'gap': '5px'
+                });
+
+                const itemHeader = $('<div>').css({
+                    'display': 'flex',
+                    'justify-content': 'space-between',
+                    'align-items': 'center'
+                });
+
+                const itemName = $('<div>').text(item.name).css({
+                    'font-weight': 'bold',
+                    'font-size': '16px'
+                });
+
+                const itemDescription = $('<div>').text(item.description).css({
+                    'color': '#666',
+                    'font-size': '14px'
+                });
+
+                const addButton = $('<button>').text('+ Προσθήκη').css({
+                    'background-color': '#4CAF50',
+                    'color': 'white',
+                    'border': 'none',
+                    'padding': '8px 15px',
+                    'border-radius': '5px',
+                    'cursor': 'pointer',
+                    'margin-top': '10px',
+                    'transition': 'background-color 0.3s ease'
+                }).hover(
+                    function() { $(this).css('background-color', '#45a049'); },
+                    function() { $(this).css('background-color', '#4CAF50'); }
+                );
+
+                addButton.click(function(e) {
+                    e.stopPropagation();
+                    addItemToOrder(item);
+                    updateOrderPanel();
+                });
+
+                itemHeader.append(itemName);
+                itemInfo.append(itemHeader, itemDescription, addButton);
+                itemElement.append(itemImage, itemInfo);
+                itemsList.append(itemElement);
+            });
+
+            categoryHeader.click(function() {
+                itemsList.slideToggle(300);
+                $('.menu-items-list').not(itemsList).slideUp(300);
+            });
+
+            categoryContainer.append(categoryHeader, itemsList);
+            menuList.append(categoryContainer);
+        });
+
+        leftPanel.append(menuList);
+
+        // Right Panel
+        const rightPanel = $('<div>').css({
+            'background-color': 'white',
+            'border-radius': '15px',
+            'padding': '20px',
+            'box-shadow': '0 4px 6px rgba(0, 0, 0, 0.1)',
+            'display': 'flex',
+            'flex-direction': 'column',
+            'height': '100%'
+        });
+
+        const orderTitle = $('<h3>').text('Η Παραγγελία σας').css({
+            'margin': '0 0 20px 0',
+            'color': '#54473F',
+            'font-size': '24px'
+        });
+
+        const orderItemsContainer = $('<div>').css({
+            'flex-grow': '1',
+            'overflow-y': 'auto',
+            'margin-bottom': '20px'
+        }).attr('id', 'orderItemsContainer');
+
+        const orderSummaryContainer = $('<div>').css({
+            'border-top': '2px solid #eee',
+            'padding-top': '20px',
+            'margin-top': 'auto'
+        });
+
+        const submitButton = $('<button>').text('Αποστολή Παραγγελίας').css({
+            'width': '100%',
+            'padding': '15px',
+            'background-color': '#4CAF50',
+            'color': 'white',
+            'border': 'none',
+            'border-radius': '8px',
+            'font-size': '18px',
+            'font-weight': 'bold',
+            'cursor': 'pointer',
+            'transition': 'background-color 0.3s ease'
+        }).hover(
+            function() { $(this).css('background-color', '#45a049'); },
+            function() { $(this).css('background-color', '#4CAF50'); }
+        ).click(function() {
+            if (selectedItems.length > 0) {
+                showMessage('Η παραγγελία σας στάλθηκε επιτυχώς!');
+                selectedItems = [];
+                updateOrderPanel();
+            } else {
+                showMessage('Παρακαλώ επιλέξτε τουλάχιστον ένα προϊόν');
+            }
+        });
+
+        orderSummaryContainer.append(submitButton);
+        rightPanel.append(orderTitle, orderItemsContainer, orderSummaryContainer);
+        
+        panelsContainer.append(leftPanel, rightPanel);
+        windowContainer.append(panelsContainer);
+        $(".container").append(windowContainer);
+
+        updateOrderPanel();
+    }
+
+    function showEvents() {
+        $(".container").empty();
+        const windowContainer = $('<div>').css({
+            'width': '100%',
+            'height': '100%',
+            'padding': '2rem',
+            'display': 'flex',
+            'flex-direction': 'column',
+            'gap': '20px',
+            'box-sizing': 'border-box'
+        });
+
+        // Header
+        const header = $('<div>').css({
+            'display': 'flex',
+            'align-items': 'center',
+            'gap': '20px',
+            'padding': '10px 0',
+            'box-sizing': 'border-box'
+        });
+
+        const backButton = $('<button>')
+            .text('←')
+            .css({
+                'background-color': '#9A7E6F',
+                'color': 'white',
+                'padding': '10px 20px',
+                'border-radius': '8px',
+                'font-size': '24px',
+                'font-weight': 'bold',
+                'cursor': 'pointer',
+                'transition': 'background-color 0.3s ease',
+                'border': 'none'
+            })
+            .hover(
+                function() { $(this).css('background-color', '#826a5d'); },
+                function() { $(this).css('background-color', '#9A7E6F'); }
+            )
+            .click(function() {
+                createSubWindow('Επικοινωνία Με Υπαλλήλους');
+            });
+
+        const windowTitle = $('<h2>')
+            .text('Προσεχείς Εκδηλώσεις')
+            .css({
+                'font-size': '32px',
+                'color': '#54473F',
+                'margin': '0'
+            });
+
+        header.append(backButton, windowTitle);
+
+        // Main content container
+        const contentContainer = $('<div>').css({
+            'display': 'flex',
+            'gap': '30px',
+            'flex': '1',
+            'background-color': 'white',
+            'border-radius': '15px',
+            'padding': '20px',
+            'box-shadow': '0 4px 6px rgba(0, 0, 0, 0.1)',
+            'box-sizing': 'border-box',
+            'min-height': '0'
+        });
+
+        // Events list on the left
+        const eventsList = $('<div>').css({
+            'width': '25%',
+            'display': 'flex',
+            'flex-direction': 'column',
+            'gap': '15px',
+            'padding-right': '15px',
+            'border-right': '1px solid #eee',
+            'overflow-y': 'auto',
+            'box-sizing': 'border-box'
+        });
+
+        // Featured event on the right
+        const featuredEvent = $('<div>').css({
+            'width': '75%',
+            'position': 'relative',
+            'border-radius': '12px',
+            'overflow': 'hidden',
+            'box-sizing': 'border-box',
+            'display': 'flex',
+            'flex-direction': 'column'
+        });
+
+        const events = [
+            {
+                id: 1,
+                title: 'Συναυλία',
+                date: '15 Ιουλίου 2024',
+                time: '21:00',
+                image: 'concert.png',
+                description: 'Μια μαγική βραδιά με ζωντανή μουσική κάτω από τα αστέρια.'
+            },
+            {
+                id: 2,
+                title: 'Πρωτάθλημα Σκακιού',
+                date: '20 Ιουλίου 2024',
+                time: '10:00',
+                image: 'chess.png',
+                description: 'Διήμερο τουρνουά σκακιού με συμμετοχές από όλη την Ελλάδα.'
+            },
+            {
+                id: 3,
+                title: 'Τουρνουά Μπάσκετ',
+                date: '25 Ιουλίου 2024',
+                time: '17:00',
+                image: 'basketball.png',
+                description: 'Φιλικός αγώνας μπάσκετ μεταξύ των ομάδων της περιοχής.'
+            }
+        ];
+
+        // Create event cards
+        events.forEach((event, index) => {
+            const eventCard = $('<div>').css({
+                'background-color': index === 0 ? '#9A7E6F' : '#f3f4f6',
+                'color': index === 0 ? 'white' : '#333',
+                'border-radius': '12px',
+                'padding': '20px',
+                'cursor': 'pointer',
+                'transition': 'all 0.3s ease',
+                'box-sizing': 'border-box'
+            }).addClass('event-card');
+
+            const title = $('<div>').text(event.title).css({
+                'font-size': '20px',
+                'font-weight': 'bold',
+                'margin-bottom': '10px'
+            });
+
+            const dateTime = $('<div>').text(`${event.date}, ${event.time}`).css({
+                'font-size': '16px',
+                'opacity': '0.9'
+            });
+
+            eventCard.append(title, dateTime);
+
+            eventCard.click(function() {
+                $('.event-card').css({
+                    'background-color': '#f3f4f6',
+                    'color': '#333'
+                });
+                $(this).css({
+                    'background-color': '#9A7E6F',
+                    'color': 'white'
+                });
+                updateFeaturedEvent(event);
+            });
+
+            eventsList.append(eventCard);
+        });
+
+        function updateFeaturedEvent(event) {
+            featuredEvent.empty();
+            
+            const imageContainer = $('<div>').css({
+                'flex': '1',
+                'display': 'flex',
+                'justify-content': 'center',
+                'align-items': 'center',
+                'background-color': '#f8f9fa',
+                'overflow': 'hidden',
+                'position': 'relative',
+                'box-sizing': 'border-box'
+            });
+            
+            const featuredImage = $('<img>').attr({
+                'src': event.image,
+                'alt': event.title
+            }).css({
+                'max-width': '100%',
+                'max-height': '100%',
+                'object-fit': 'contain'
+            });
+
+            const infoOverlay = $('<div>').css({
+                'position': 'absolute',
+                'bottom': '0',
+                'left': '0',
+                'right': '0',
+                'background': 'linear-gradient(transparent, rgba(0,0,0,0.8))',
+                'color': 'white',
+                'padding': '30px',
+                'box-sizing': 'border-box'
+            });
+
+            const title = $('<div>').text(event.title).css({
+                'font-size': '28px',
+                'font-weight': 'bold',
+                'margin-bottom': '15px'
+            });
+
+            const dateTime = $('<div>').text(`${event.date}, ${event.time}`).css({
+                'font-size': '18px',
+                'margin-bottom': '10px',
+                'opacity': '0.9'
+            });
+
+            const description = $('<div>').text(event.description).css({
+                'font-size': '16px',
+                'opacity': '0.9',
+                'line-height': '1.5'
+            });
+
+            infoOverlay.append(title, dateTime, description);
+            imageContainer.append(featuredImage, infoOverlay);
+            featuredEvent.append(imageContainer);
+        }
+
+        // Set initial featured event
+        updateFeaturedEvent(events[0]);
+
+        contentContainer.append(eventsList, featuredEvent);
+        windowContainer.append(header, contentContainer);
+        $(".container").append(windowContainer);
+    }
+
+    function addItemToOrder(item) {
+        const existingItem = selectedItems.find(i => i.name === item.name);
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            selectedItems.push({
+                ...item,
+                quantity: 1
+            });
+        }
+    }
+
+    function removeItemFromOrder(itemName) {
+        const item = selectedItems.find(i => i.name === itemName);
+        if (item) {
+            selectedItems = selectedItems.filter(i => i.name !== itemName);
+        }
+        updateOrderPanel();
+    }
+
+    function updateItemQuantity(itemName, newQuantity) {
+        const item = selectedItems.find(i => i.name === itemName);
+        if (item) {
+            item.quantity = newQuantity;
+            if (item.quantity <= 0) {
+                removeItemFromOrder(itemName);
+            } else {
+                updateOrderPanel();
+            }
+        }
+    }
+
+    function updateOrderPanel() {
+        const container = $('#orderItemsContainer');
+        container.empty();
+
+        if (selectedItems.length === 0) {
+            container.append(
+                $('<div>').text('Δεν έχετε επιλέξει προϊόντα').css({
+                    'text-align': 'center',
+                    'color': '#666',
+                    'padding': '20px',
+                    'font-style': 'italic'
+                })
+            );
+        } else {
+            selectedItems.forEach(item => {
+                const itemElement = $('<div>').css({
+                    'display': 'flex',
+                    'justify-content': 'space-between',
+                    'align-items': 'center',
+                    'padding': '15px',
+                    'border-bottom': '1px solid #eee',
+                    'gap': '10px'
+                });
+
+                // Left side - Item info
+                const itemInfo = $('<div>').css({
+                    'display': 'flex',
+                    'align-items': 'center',
+                    'gap': '15px'
+                });
+
+                const itemImage = $('<img>').attr({
+                    'src': item.image,
+                    'alt': item.name
+                }).css({
+                    'width': '50px',
+                    'height': '50px',
+                    'object-fit': 'cover',
+                    'border-radius': '6px'
+                });
+
+                const itemDetails = $('<div>').css({
+                    'display': 'flex',
+                    'flex-direction': 'column',
+                    'gap': '5px'
+                });
+
+                const itemName = $('<div>').text(item.name).css({
+                    'font-weight': 'bold',
+                    'color': '#54473F'
+                });
+
+                const itemDescription = $('<div>').text(item.description).css({
+                    'font-size': '12px',
+                    'color': '#666',
+                    'max-width': '200px',
+                    'white-space': 'nowrap',
+                    'overflow': 'hidden',
+                    'text-overflow': 'ellipsis'
+                });
+
+                itemDetails.append(itemName, itemDescription);
+                itemInfo.append(itemImage, itemDetails);
+
+                // Right side - Quantity controls
+                const controls = $('<div>').css({
+                    'display': 'flex',
+                    'align-items': 'center',
+                    'gap': '10px'
+                });
+
+                const decreaseButton = $('<button>').text('-').css({
+                    'width': '30px',
+                    'height': '30px',
+                    'border-radius': '50%',
+                    'border': 'none',
+                    'background-color': '#f5f5f5',
+                    'cursor': 'pointer',
+                    'font-weight': 'bold',
+                    'color': '#54473F'
+                }).click(() => updateItemQuantity(item.name, item.quantity - 1));
+
+                const quantity = $('<span>').text(item.quantity).css({
+                    'font-weight': 'bold',
+                    'color': '#54473F',
+                    'min-width': '30px',
+                    'text-align': 'center'
+                });
+
+                const increaseButton = $('<button>').text('+').css({
+                    'width': '30px',
+                    'height': '30px',
+                    'border-radius': '50%',
+                    'border': 'none',
+                    'background-color': '#4CAF50',
+                    'color': 'white',
+                    'cursor': 'pointer',
+                    'font-weight': 'bold'
+                }).click(() => updateItemQuantity(item.name, item.quantity + 1));
+
+                const removeButton = $('<button>')
+                    .html('&times;')
+                    .css({
+                        'background': 'none',
+                        'border': 'none',
+                        'color': '#FF5252',
+                        'font-size': '20px',
+                        'cursor': 'pointer',
+                        'padding': '0 10px',
+                        'margin-left': '10px'
+                    })
+                    .click(() => removeItemFromOrder(item.name));
+
+                controls.append(decreaseButton, quantity, increaseButton, removeButton);
+
+                itemElement.append(itemInfo, controls);
+                container.append(itemElement);
+            });
+
+            // Add order summary below items
+            const summaryContainer = $('<div>').css({
+                'margin-top': '20px',
+                'padding': '15px',
+                'border-top': '2px solid #eee',
+                'display': 'flex',
+                'flex-direction': 'column',
+                'gap': '10px'
+            });
+
+            // Calculate totals
+            const totalQuantity = selectedItems.reduce((sum, item) => sum + item.quantity, 0);
+            
+            // Summary title
+            const summaryTitle = $('<div>').text('Σύνοψη Παραγγελίας').css({
+                'font-weight': 'bold',
+                'color': '#54473F',
+                'font-size': '16px',
+                'margin-bottom': '10px'
+            });
+
+            // Items count
+            const itemsCount = $('<div>').text(`Συνολικά τεμάχια: ${totalQuantity}`).css({
+                'color': '#666'
+            });
+
+            summaryContainer.append(summaryTitle, itemsCount);
+            container.append(summaryContainer);
+        }
+    }
+
+    function touristNavigation(contentArea) {
+
+        showMessage('Ανακαλύψτε σημεία ενδιαφέροντος στην περιοχή και δείτε φωτογραφίες από τα αξιοθέατα που μπορείτε να επισκεφθείτε.');
+
+        contentArea.css({
+            'background-image': 'url("map2.jpg")',
+            'background-size': 'cover',
+            'background-position': 'center',
+            'width': '100%',
+            'height': '100%',
+            'z-index': '1',
+            'position': 'relative',
+            'padding': '0px'
+        });
+
+        const gridDiv = $('<div>').addClass('gridDiv');
+
+        // Δημιουργία modal για τις φωτογραφίες
+        const imageModal = $('<div>').css({
+            'display': 'none',
+            'position': 'fixed',
+            'top': '0',
+            'left': '0',
+            'width': '100%',
+            'height': '100%',
+            'background-color': 'rgba(0, 0, 0, 0.8)',
+            'z-index': '1001',
+            'justify-content': 'center',
+            'align-items': 'center'
+        }).click(function() {
+            $(this).fadeOut(300);
+        });
+
+        const modalContent = $('<div>').css({
+            'max-width': '80%',
+            'max-height': '80%',
+            'position': 'relative'
+        });
+
+        const modalImage = $('<img>').css({
+            'max-width': '100%',
+            'max-height': '80vh',
+            'object-fit': 'contain',
+            'border-radius': '8px'
+        });
+
+        modalContent.append(modalImage);
+        imageModal.append(modalContent);
+        $('body').append(imageModal);
+
+        if(firstTime){            
+            firstTime = false;
+            temp = tentLocation.toString();
+            availableShelterLocations = possibleShelterLocations.filter(loc => loc !== temp);
+            shelterLocation = availableShelterLocations[Math.floor(Math.random() * availableShelterLocations.length)];
+        }
+
+        for (let i = 1; i <= 3; i++) {
+            for(let j = 1; j <= 3; j++){
+                let tempDiv = $('<div>').attr('id', `area${i}${j}`).css({
+                    'position': 'relative',
+                    'transition': 'border 0.3s ease',
+                    'cursor': 'pointer'
+                });
+
+                const areaId = i.toString() + j.toString();
+
+                // Info box για το hover
+                const infoBox = $('<div>').css({
+                    'display': 'none',
+                    'position': 'absolute',
+                    'top': '50%',
+                    'left': '50%',
+                    'transform': 'translate(-50%, -50%)',
+                    'background-color': 'rgba(84, 71, 63, 0.9)',
+                    'color': 'white',
+                    'padding': '10px 20px',
+                    'border-radius': '8px',
+                    'z-index': '1000',
+                    'white-space': 'nowrap',
+                    'font-size': '16px',
+                    'text-align': 'center'
+                });
+
+                // Προσθήκη του κειμένου και ορισμός της εικόνας για κάθε περιοχή
+                let imageSrc;
+                if(areaId === tentLocation) {
+                    infoBox.text('Εδώ βρίσκεται η σκηνή σας');
+                    // Add tent image
+                    const tentImage = $('<img>').attr({
+                        'src': 'topdownTent3.png',
+                        'alt': 'Tent'
+                    }).css({
+                        'width': '100px',
+                        'height': '100px',
+                        'position': 'absolute',
+                        'top': '50%',
+                        'left': '50%',
+                        'transform': 'translate(-50%, -50%)',
+                        'object-fit': 'contain',
+                        'z-index': '2'
+                    });
+                    tempDiv.append(tentImage);
+                } else if(areaId === shelterLocation) {
+                    infoBox.text('Εδώ βρίσκεται το καταφύγιο');
+                    // Add shelter image
+                    const shelterImage = $('<img>').attr({
+                        'src': 'shelter2.png',
+                        'alt': 'Shelter'
+                    }).css({
+                        'width': '100px',
+                        'height': '100px',
+                        'position': 'absolute',
+                        'top': '50%',
+                        'left': '50%',
+                        'transform': 'translate(-50%, -50%)',
+                        'object-fit': 'contain',
+                        'z-index': '2'
+                    });
+                    tempDiv.append(shelterImage);
+                } else {
+                    switch(areaId) {
+                        case '11':
+                            infoBox.text('Ορειβατικό Μονοπάτι Στο Βουνό');
+                            imageSrc = 'mountainTrail.jfif';
+                            break;
+                        case '12':
+                            infoBox.text('Μονοπάτι Πεζοπορίας');
+                            imageSrc = 'hickingTrail.jfif';
+                            break;
+                        case '13':
+                            infoBox.text('Αμμόλοφοι');
+                            imageSrc = 'sandDunes.jfif';
+                            break;
+                        case '21':
+                            infoBox.text('Καφετέρια Στην Κορυφή Του Βουνού');
+                            imageSrc = 'mountainCafe.jfif';
+                            break;
+                        case '22':
+                            infoBox.text('Ιδανικό Μέρος Για Μπάνιο Στο Ποτάμι');
+                            imageSrc = 'riverSwim.jfif';
+                            break;
+                        case '23':
+                            infoBox.text('Περίπατος Στη Ζούγκλα');
+                            imageSrc = 'jungle.jpeg';
+                            break;
+                        case '31':
+                            infoBox.text('Χιονοδρομικό Κέντρο');
+                            imageSrc = 'skiResort.jfif';
+                            break;
+                        case '32':
+                            infoBox.text('Ιδανικό Μέρος Για Φωτογραφίες Στο Φαράγγι');
+                            imageSrc = 'canyon.jfif';
+                            break;
+                        case '33':
+                            infoBox.text('Αρχαίο Μνημείο');
+                            imageSrc = 'monument.jfif';
+                            break;
+                    }
+                }
+
+                tempDiv.append(infoBox);
+
+                // Hover effects
+                tempDiv.hover(
+                    function() {
+                        $(this).css('border', '10px solid rgb(84, 71, 63)');
+                        $(this).find(infoBox).fadeIn(300);
+                    },
+                    function() {
+                        $(this).css('border', 'none');
+                        $(this).find(infoBox).fadeOut(300);
+                    }
+                );
+
+                // Click event για εμφάνιση φωτογραφίας
+                if(imageSrc) {
+                    tempDiv.click(function(e) {
+                        e.stopPropagation();
+                        modalImage.attr('src', imageSrc);
+                        imageModal.css('display', 'flex').hide().fadeIn(300);
+                    });
+                }
+
+                gridDiv.append(tempDiv);
+            }
+        }
+
+        contentArea.append(gridDiv);
+    }
+
+    function showOutdoorView(contentArea) {
+        showMessage('Δείτε σε πραγματικό χρόνο την κατάσταση του περιβάλλοντα χώρου της σκηνής σας και ελέγξτε για τυχόν επισκέπτες.');
+
+        const views = [
+            { name: 'Εσωτερικά', image: 'insideviewTent.png', desc: 'Εσωτερική Θέα' },
+            { name: 'Μπροστά', image: 'frontviewTent.png', desc: 'Μπροστινή Θέα' },
+            { name: 'Δεξιά', image: 'sideviewTent.png', desc: 'Δεξιά Θέα' },
+            { name: 'Πίσω', image: 'backviewTent.png', desc: 'Πίσω Θέα' },
+            { name: 'Αριστερά', image: 'canyon.jfif', desc: 'Αριστερή Θέα' }
+        ];
+
+        let currentIndex = 0;
+
+        // Create the main slideshow container
+        const slideshowContainer = $('<div>').css({
+            'width': '98%',
+            'max-height': '100%',
+            'display': 'flex',
+            'flex-direction': 'column',
+            'align-items': 'center',
+            'gap': '15px',
+            'padding': '15px',
+            'background-color': 'white',
+            'border-radius': '15px',
+            'box-shadow': '0 4px 6px rgba(0, 0, 0, 0.1)',
+            'overflow': 'hidden'
+        });
+
+        // Create image container
+        const imageContainer = $('<div>').css({
+            'position': 'relative',
+            'width': '80%',
+            'height': '450px', // Reduced height to fit within container
+            'border-radius': '12px',
+            'overflow': 'hidden',
+            'background-color': 'rgba(154, 126, 111, 0.1)',
+            'display': 'flex',
+            'justify-content': 'center',
+            'align-items': 'center'
+        });
+
+        // Create image element
+        const image = $('<img>').attr({
+            'src': views[0].image,
+            'alt': views[0].desc
+        }).css({
+            'max-width': '100%',
+            'max-height': '100%',
+            'object-fit': 'contain',
+            'border-radius': '12px'
+        });
+
+        // Create description
+        const description = $('<div>').text(views[0].desc).css({
+            'font-size': '20px', // Slightly reduced font size
+            'color': '#54473F',
+            'text-align': 'center',
+            'padding': '5px',
+            'font-weight': 'bold'
+        });
+
+        // Create navigation dots
+        const navigation = $('<div>').css({
+            'display': 'flex',
+            'gap': '10px',
+            'justify-content': 'center',
+            'margin-top': '10px',
+            'margin-bottom': '5px' // Added bottom margin
+        });
+
+        // Create navigation buttons
+        const createNavButton = (text, position) => {
+            return $('<button>').text(text).css({
+                'position': 'absolute',
+                [position]: '20px',
+                'top': '50%',
+                'transform': 'translateY(-50%)',
+                'background-color': 'rgba(154, 126, 111, 0.8)',
+                'color': 'white',
+                'border': 'none',
+                'padding': '12px 20px', // Slightly reduced padding
+                'border-radius': '8px',
+                'cursor': 'pointer',
+                'font-size': '18px', // Slightly reduced font size
+                'transition': 'background-color 0.3s ease',
+                'z-index': '2'
+            }).hover(
+                function() { $(this).css('background-color', 'rgba(130, 106, 93, 0.8)'); },
+                function() { $(this).css('background-color', 'rgba(154, 126, 111, 0.8)'); }
+            );
+        };
+
+        const prevButton = createNavButton('←', 'left');
+        const nextButton = createNavButton('→', 'right');
+
+        // Create navigation dots
+        views.forEach((_, index) => {
+            const dot = $('<button>').css({
+                'width': '12px',
+                'height': '12px',
+                'border-radius': '50%',
+                'border': 'none',
+                'background-color': index === 0 ? '#9A7E6F' : '#D1D5DB',
+                'cursor': 'pointer',
+                'transition': 'background-color 0.3s ease'
+            }).click(() => updateView(index));
+
+            navigation.append(dot);
+        });
+
+        // Update view function
+        function updateView(index) {
+            currentIndex = index;
+            image.fadeOut(300, function() {
+                image.attr('src', views[index].image)
+                    .fadeIn(300);
+                description.text(views[index].desc);
+                navigation.find('button').each((i, dot) => {
+                    $(dot).css('background-color', i === index ? '#9A7E6F' : '#D1D5DB');
+                });
+            });
+        }
+
+        // Add click handlers for prev/next buttons
+        prevButton.click(() => {
+            updateView((currentIndex - 1 + views.length) % views.length);
+        });
+
+        nextButton.click(() => {
+            updateView((currentIndex + 1) % views.length);
+        });
+
+        // Assemble the slideshow
+        imageContainer.append(image, prevButton, nextButton);
+        slideshowContainer.append(imageContainer, description, navigation);
+        contentArea.empty().append(slideshowContainer);
+    }
+
+</script>
+
+</body>
+</html>
